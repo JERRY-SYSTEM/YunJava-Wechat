@@ -14,7 +14,7 @@ public String joinGroup(String xmlContent) {// 陌然
             NodeList memberList = linkElement.getElementsByTagName("memberlist");
             if (memberList.getLength() > 0) {
                 Node memberListNode = memberList.item(0);
-                NodeList usernameList = ((Element) memberListNode).getElementsByTagName("username");
+                NodeList usernameList = ((Element) memberListNode).getElementsByTagName("nickname");
                 if (usernameList.getLength() > 0) {
                     Node usernameNode = usernameList.item(0);
                     json.putOpt(linkName, usernameNode.getTextContent());
@@ -65,14 +65,15 @@ public void 进群(Object data) {
                 JSONObject json=new JSONObject(joinGroup);
                 String name="获取失败";
                 if(json.has("adder")) {
-                    name=getName(json.getString("adder"));
+                    name=json.getString("adder");
                 } else if(json.has("names")) {
-                    name=getName(json.getString("names"));
-                } else if(json.has("username")) {
-                    name=getName(json.getString("username"));
+                    name="获取失败";
                 }
                 String time=df.format(calendar.getTime());
-                text="╔═╗╔═╗╔═╗╔═╗\n╟欢╢╟迎╢╟新╢╟人╢\n╚═╝╚═╝╚═╝╚═╝\n欢迎新人进群\n群名:[当前群名]\n用户:[用户名字]\n人数:[群人数]\n[当前时间]";
+                text="欢迎新人进群\n"
+                    +"群名:[当前群名]\n"
+                    +"用户:[用户名字]\n"
+                    +"人数:[群人数]";
                 if(!getString(qun,"进群欢迎内容","").equals("")) {
                     text=getString(qun,"进群欢迎内容","");
                 }
@@ -80,7 +81,7 @@ public void 进群(Object data) {
                 text=text.replace("[用户名字]",name);
                 text=text.replace("[当前群名]",getName(qun));
                 text=text.replace("[自己名字]",getName(mWxid));
-                text=text.replace("[群人数]",String.valueOf(getChatMembers(qun)));
+                text=text.replace("[群人数]",String.valueOf((getChatMembers(qun)+1)));
                 sendm(qun,text);
             }
         }

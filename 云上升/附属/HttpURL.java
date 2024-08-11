@@ -311,7 +311,63 @@ public String get(String url) {
         return "发生错误: " + e.getMessage();
     }
 }
+public String qqLyricget(String url) {
+    try {
+        URL urlObj = new URL(url);
+        HttpURLConnection connection = (HttpURLConnection) urlObj.openConnection();
+        connection.setRequestMethod("GET");
+        connection.setConnectTimeout(5000);
+        connection.setReadTimeout(5000);
+        connection.setRequestProperty("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.105 Safari/537.36");
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (iPad; CPU OS 13_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/87.0.4280.77 Mobile/15E148 Safari/604.1");
+        connection.setRequestProperty("referer", "https://y.qq.com/");
+        
 
+
+        isr = new InputStreamReader(connection.getInputStream(), "utf-8");
+        BufferedReader reader = new BufferedReader(isr);
+        String line;
+        StringBuilder response = new StringBuilder();
+        while ((line = reader.readLine()) != null) {
+            response.append(line);
+        }
+        reader.close();
+        connection.disconnect();
+        return response.toString();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+public String pdget(String url) {
+    try {
+        URL urlObj = new URL(url);
+        HttpURLConnection connection = (HttpURLConnection) urlObj.openConnection();
+        connection.setRequestMethod("GET");
+        connection.setConnectTimeout(5000);
+        connection.setReadTimeout(5000);
+        connection.setRequestProperty("devid","97cdfbe3f8d364df");
+        connection.setRequestProperty("host", "bd-api.kuwo.cn");
+        connection.setRequestProperty("user-agent", "Dart/2.19 (dart:io)");
+        connection.setRequestProperty("plat", "ar");
+        connection.setRequestProperty("channel", "xiaomi");
+        connection.setRequestProperty("ver", "4.1.3");
+
+        isr = new InputStreamReader(connection.getInputStream(), "utf-8");
+        BufferedReader reader = new BufferedReader(isr);
+        String line;
+        StringBuilder response = new StringBuilder();
+        while ((line = reader.readLine()) != null) {
+            response.append(line);
+        }
+        reader.close();
+        connection.disconnect();
+        return response.toString();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return null;
+}
 public String douyinget(String url) {
     try {
         URL urlObj = new URL(url);

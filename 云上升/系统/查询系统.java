@@ -196,7 +196,7 @@ public void 查询(Object data) {
                       +"时间:"+updatetime+"\n";
                 } else if(code==400) {
                     String msg = json.getString("msg");
-                    text = "系统:"+matcher.group(1)+"-扣扣区\n提示:"+msg
+                    text = "系统:"+matcher.group(1)+"-扣扣区\n提示:"+msg+"\n"
                         +" -------------------------\n";
                 } else {
                     text = "系统:"+matcher.group(1)+"-扣扣区\n提示:出现未知错误\n"

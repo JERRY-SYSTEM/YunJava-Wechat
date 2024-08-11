@@ -1,19 +1,18 @@
 //勿改
 String 脚本作者="云上升";
-String 更新时间="24年5月2日";
+String 更新时间="24年5月26日";
 String 当前版本=PluginVersion;
-String 作者扣扣="3449496653";
 long 开始加载=System.currentTimeMillis();
-//附加
-Thread 附加=new Thread(new Runnable() {
+//附属
+Thread 附属=new Thread(new Runnable() {
     public void run() {
-        loadJava(JavaPath+"/云上升/附加/import.java");
-        loadJava(JavaPath+"/云上升/附加/云上升.java");
-        loadJava(JavaPath+"/云上升/附加/微信卡片.java");
-        loadJava(JavaPath+"/云上升/附加/ItemCore.java");
-        loadJava(JavaPath+"/云上升/附加/HttpURL.java");
+        loadJava(JavaPath+"/云上升/附属/import.java");
+        loadJava(JavaPath+"/云上升/附属/云上升.java");
+        loadJava(JavaPath+"/云上升/附属/微信卡片.java");
+        loadJava(JavaPath+"/云上升/附属/ItemCore.java");
+        loadJava(JavaPath+"/云上升/附属/HttpURL.java");
     }
-});附加.start();
+});附属.start();
 //系统
 Thread 系统=new Thread(new Runnable() {
     public void run() {
@@ -29,10 +28,11 @@ Thread 系统=new Thread(new Runnable() {
         loadJava(JavaPath+"/云上升/系统/艾特回复.java");
         loadJava(JavaPath+"/云上升/系统/进群欢迎.java");
         loadJava(JavaPath+"/云上升/系统/查询系统.java");
+        loadJava(JavaPath+"/云上升/系统/解析系统.java");
     }
 });系统.start();
 try {
-    附加.join();
+    附属.join();
     系统.join();
 } catch (InterruptedException e) {
     Thread.currentThread().interrupt();

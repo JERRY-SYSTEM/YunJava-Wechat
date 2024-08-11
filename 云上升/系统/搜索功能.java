@@ -31,7 +31,7 @@ public void 搜索(Object data) {
                 if(name.equals("N")) {
                     name=msg;
                 }
-                String  favorite_count =data.getString("favorite_count");
+                String favorite_count =data.getString("favorite_count");
                 String add_datetime=data.getString("add_datetime");
                 String add_datetime_pretty=data.getString("add_datetime_pretty");
                 result2+=(i+1)+"."+name+" "+add_datetime_pretty+"\n喜欢:"+like_count+"次 收藏:"+favorite_count+"人\n";

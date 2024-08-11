@@ -15,6 +15,22 @@ public static void 开关(Object data) {
         putString(qun,"发送模式","2");
         sendMsg(qun,"已切换为卡片发送");
     }
+    if(text.equals("开启解析系统")) {
+        if("1".equals(getString(qun,"解析系统",""))) {
+            sendMsg(qun,"已经开了");
+            return;
+        }
+        putString(qun,"解析系统","1");
+        sendMsg(qun,"已开启");
+    }
+    if(text.equals("关闭解析系统")) {
+        if(!"1".equals(getString(qun,"解析系统",""))) {
+            sendMsg(qun,"还没开");
+            return;
+        }
+        putString(qun, "解析系统", null);
+        sendMsg(qun,"已关闭");
+    }
     if(text.equals("开启查询系统")) {
         if("1".equals(getString(qun,"查询系统",""))) {
             sendMsg(qun,"已经开了");
@@ -253,7 +269,7 @@ public static void 开关(Object data) {
             return;
         }
         putString("开关", "底部尾巴", null);
-        sendMsg(qun,"已关闭",2);
+        sendMsg(qun,"已关闭");
     }
     if(text.startsWith("设置底部内容")) {
         text=text.substring(6);
@@ -287,6 +303,7 @@ public static void 开关(Object data) {
         putString(qun, "进群欢迎", "1");
         putString(qun, "词条系统", "1");
         putString(qun, "查询系统", "1");
+        putString(qun, "解析系统", "1");
         sendm(qun,"已开启全部功能");
     }
     if(text.equals("关闭全部功能")) {
@@ -302,6 +319,7 @@ public static void 开关(Object data) {
         putString(qun, "进群欢迎", null);
         putString(qun, "词条系统", null);
         putString(qun, "查询系统", null);
+        putString(qun, "解析系统", null);
         sendm(qun,"已关闭全部功能");
     }
 }
@@ -364,9 +382,9 @@ public static void sendm(String qun,String text) {
     }
 }
 
-public boolean[] boolArr=new boolean[13];
-public String[] kname=new String[] {"开关","菜单屏蔽","菜单限制","音乐系统","图片系统","搜索功能","智能系统","视频系统","艾特回复","进群欢迎","自身撤回","词条系统","查询系统"};
-public String[] ww=new String[] {"开/关机","菜单屏蔽","菜单限制","音乐系统","图片系统","搜索功能","智能系统","视频系统","艾特回复","进群欢迎","自身撤回","词条系统","查询系统"};
+public boolean[] boolArr=new boolean[14];
+public String[] kname=new String[] {"开关","菜单屏蔽","菜单限制","音乐系统","图片系统","搜索功能","智能系统","视频系统","艾特回复","进群欢迎","自身撤回","词条系统","查询系统","解析系统"};
+public String[] ww=new String[] {"开/关机","菜单屏蔽","菜单限制","音乐系统","图片系统","搜索功能","智能系统","视频系统","艾特回复","进群欢迎","自身撤回","词条系统","查询系统","解析系统"};
 
 public void 开关设置(String qun) {
     initActivity();
