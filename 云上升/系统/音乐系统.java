@@ -248,22 +248,55 @@ if(text.startsWith("点歌")){
 text=text.substring(2).trim();
 if(text.equals("")){return;}
 String result2="";
-String jsonData=get("https://api.lolimi.cn/API/yiny/?word="+text+"&n=1");
+String jsonData=get("http://u.y.qq.com/cgi-bin/musicu.fcg?data={\"comm\":{\"ct\":\"19\",\"cv\":\"1882\",\"uin\":\"0\"},\"searchMusic\":{\"method\":\"DoSearchForQQMusicDesktop\",\"module\":\"music.search.SearchCgiService\",\"param\":{\"grp\":1,\"num_per_page\":1,\"page_num\":1,\"query\":\""+text+"\",\"search_type\":0}}}");
 try{
 JSONObject jsonObject=new JSONObject(jsonData);
-if(jsonObject.get("code")==200){
-JSONObject data=jsonObject.getJSONObject("data");
-String song=data.getString("song");
-String singer=data.getString("singer");
-String cover=data.getString("cover");
-String link=data.getString("link");
-String url=data.getString("url");
-sendMusic(qun,url,singer,song,cover);
-} else {
-sendm(qun,"未搜到");
+if(jsonObject.get("code")==0){
+JSONObject searchMusicObject = jsonObject.getJSONObject("searchMusic");
+JSONObject dataObject = searchMusicObject.getJSONObject("data");
+JSONObject bodyObject = dataObject.getJSONObject("body");
+JSONObject songObject = bodyObject.getJSONObject("song");
+JSONArray songList = songObject.getJSONArray("list");
+if(songList==null||songList.length()==0){sendm(qun,"未搜到");return;}
+for(int i=0;i<1;i++){
+JSONObject data=songList.getJSONObject(i);
+JSONObject album = data.getJSONObject("album");
+String pmid = album.getString("pmid");
+JSONArray singerArray = data.getJSONArray("singer");
+JSONObject firstSinger = singerArray.getJSONObject(0);
+String firstSingerName = firstSinger.getString("name");
+String name=data.getString("name");
+String mid=data.getString("mid");
+String file=data.getString("file");
+JSONObject json10=new JSONObject(file);
+String media_mid=json10.get("media_mid");//专辑
+String jsonData=get("http://u.y.qq.com/cgi-bin/musicu.fcg?format=json&data={\"req_0\":{\"module\":\"vkey.GetVkeyServer\",\"method\":\"CgiGetVkey\",\"param\":{\"guid\":\"7714352534\",\"songmid\":[\""+mid+"\"],\"songtype\":[0],\"uin\":\"1052906040\",\"loginflag\":1,\"platform\":\"20\"}},\"comm\":{\"uin\":\"1052906040\",\"format\":\"json\",\"ct\":24,\"cv\":0}}","");
+try{
+JSONObject jsonObject=new JSONObject(jsonData);
+JSONObject req0Object = jsonObject.getJSONObject("req_0");
+JSONObject dataObject = req0Object.getJSONObject("data");
+JSONArray sipArray = dataObject.getJSONArray("sip");
+String firstSip = sipArray.getString(0);
+JSONArray midurlinfoArray = dataObject.getJSONArray("midurlinfo");
+JSONObject midurlinfoObject = midurlinfoArray.getJSONObject(0);
+String purl = midurlinfoObject.getString("purl");
+if(purl.equals("")){
+name=name+"(付费)";
+String url2=httppost1("https://u.y.qq.com/cgi-bin/musicu.fcg","","{\"comm\":{\"uin\":\"1052906040\",\"authst\":\"\",\"mina\":1,\"appid\":1109523715,\"ct\":29},\"urlReq0\":{\"module\":\"vkey.GetVkeyServer\",\"method\":\"CgiGetVkey\",\"param\":{\"guid\":\"7982463958\",\"songmid\":[\""+mid+"\"],\"songtype\":[0],\"filename\":[\"RS02"+media_mid+".mp3\"],\"uin\":\"1052906040\",\"loginflag\":1,\"platform\":\"23\",\"h5to\":\"speed\"}}}");
+if(url2.contains("\"purl\":\"")){
+int index3 = url2.lastIndexOf("\"purl\":\"");
+String text3 = url2.substring(index3 + 8);
+int rd3 = text3.indexOf("\",\"errtype\":\"");
+firstSip="http://sjy.stream.qqmusic.qq.com/";
+purl=u解(text3.substring(0,rd3));
+}}
+String cover="http://y.gtimg.cn/music/photo_new/T002R500x500M000"+pmid+".jpg";
+sendMusic(qun,firstSip+purl,firstSingerName,name,cover);
+}catch(e){
+sendm(qun,"错误,请稍候再试");return;}
+}
 }
 }catch(e){
-sendm(qun,"错误,请稍候再试");
-return;}
+sendm(qun,"错误,请稍候再试");return;}
 }
 }

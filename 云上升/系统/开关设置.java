@@ -1,4 +1,4 @@
-public static String[] emojilist={"☘️","🎈","🌼","🌸","🍀","🪐","☀️","🌕","⚾","🏀","🥎","🏆","🟥","💥","🔔","🔅","🔆","💫","⭐","🪙","🃏","🔮","🎀","👑","🎪","🎄","🍒","🍧","🍇","🎉","🍁","🍑","🍊","🍓","🍅","🍥","🏵","🎊","🎁","🎃","🍏","🍎","🍐","🍊","🍋","🍌","🍉","🍆","⚽️"};
+public static String[] emojilist={"☘️","🎈","🌼","🌸","🍀","🪐","☀️","🌕","⚾","🏀","🥎","🏆","🟥","💥","🔔","🔅","🔆","💫","🪙","🃏","🔮","🎀","👑","🎪","🎄","🍒","🍧","🍇","🎉","🍁","🍑","🍊","🍓","🍅","🍥","🏵","🎊","🎁","🎃","🍏","🍎","🍐","🍊","🍋","🍌","🍉","🍆","⚽️"};
 public static void 开关(Object data){
 String text=data.content;
 String qun=data.talker;
@@ -205,10 +205,34 @@ sendMsg(qun,"设置成功");
 }
 if(text.startsWith("设置撤回时间")){
 text=text.substring(6);
-if(text.matches("^(?:120|[1-9][0-9]{0,2})$")){
+if(text.matches("^(?:110|[1-9]{0,2})$")){
 putInt(qun,"撤回时间",Integer.parseInt(text));
 sendMsg(qun,"已设置为"+text+"秒");
 }}
+if(text.equals("开启全部功能")){
+putString(qun, "音乐系统", "1");
+putString(qun, "图片系统", "1");
+putString(qun, "智能系统", "1");
+putString(qun, "搜索功能", "1");
+putString(qun, "自身撤回", "1");
+putString(qun, "视频系统", "1");
+putString(qun, "艾特回复", "1");
+putString(qun, "菜单限制", "1");
+putString(qun, "菜单屏蔽", "1");
+putString(qun, "进群欢迎", "1");
+sendm(qun,"已开启全部功能");}
+if(text.equals("关闭全部功能")){
+putString(qun, "音乐系统", null);
+putString(qun, "图片系统", null);
+putString(qun, "智能系统", null);
+putString(qun, "搜索功能", null);
+putString(qun, "自身撤回", null);
+putString(qun, "视频系统", null);
+putString(qun, "艾特回复", null);
+putString(qun, "菜单限制", null);
+putString(qun, "菜单屏蔽", null);
+putString(qun, "进群欢迎", null);
+sendm(qun,"已关闭全部功能");}
 }
 public static String 文案(File f){
 	String result=null;
@@ -225,8 +249,10 @@ for(Scanner sc=new Scanner(f);sc.hasNext();){
 }
 import java.text.SimpleDateFormat;
 public static void sendm(String qun,String text){
-String 菜单名字=" ────云上升────\n";
+String 菜单名字=" ────云上升────";
+if(!取("开关","菜单名字").equals("")){菜单名字=取("开关","菜单名字");}
 String e=emojilist[new Random().nextInt(emojilist.length)];
+String 昵称=菜单名字+"\n";
 text=text.replace("◇",e);
 if("1".equals(getString("开关","底部文案",""))){
 File f=new File(JavaPath+"/云上升/文案.txt");
@@ -249,12 +275,12 @@ text=text+"\n ───────────\n "+尾巴;
 }
 if("1".equals(getString(qun,"发送模式","")))
 try{
-getData(qun,菜单名字+text);
+getData(qun,昵称+text);
 } catch (Exception e) {
 Toast("错误,已自动切换为文字发送");
 putString(qun,"发送模式",null);
 } else{
-sendMsg(qun,菜单名字+text);
+sendMsg(qun,昵称+text);
 }
 }
 

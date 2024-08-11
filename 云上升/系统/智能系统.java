@@ -2,13 +2,6 @@ public void 智能(Object data){
 String text=data.content;
 String qun=data.talker;
 String wxid=data.sendTalker;
-if(mWxid.equals(qun)){
-if(text.startsWith("绑定手机号")){
-text=text.substring(5);
-if(text.matches("^[0-9]{11}$")){
-putString("开关","手机号码",text);
-sendMsg(qun,"已成功绑定");
-}}}
 if(mWxid.equals(wxid)){
 if(text.equals("发送验证码")){
 if(!getString("开关","手机号码","").equals("")){

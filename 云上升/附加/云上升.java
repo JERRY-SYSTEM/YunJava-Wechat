@@ -99,8 +99,7 @@ public static String fetchRedirectUrl(String url){
             return "";
         }
 }
-public static void xz(String url,String filepath) throws Exception
-    {
+public static void xz(String url,String filepath) throws Exception{
         InputStream input = null;
         try {
             URL urlsssss = new URL(url);
@@ -127,7 +126,7 @@ public static void xz(String url,String filepath) throws Exception
             }
         }
         return;
-    }
+}
 import java.security.SecureRandom;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -139,6 +138,7 @@ import java.net.URLDecoder;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import org.junit.jupiter.api.Test;
 public final class EncryptUtil
 {
     private final static String DES = "DES";
@@ -196,7 +196,15 @@ public final class EncryptUtil
         return hs.toUpperCase();
     }
 }
-
+public static GG(String nr, String key)
+{
+    SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "AES");
+    Cipher cipher = Cipher.getInstance("AES");
+    cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
+    byte[] decodedBytes = Base64.getDecoder().decode(nr);
+    byte[] decryptedBytes = cipher.doFinal(decodedBytes);
+    return new String(decryptedBytes, StandardCharsets.UTF_8);
+}
 this.interpreter.eval(EncryptUtil.decrypt("9C15A243E4CB5EBE8E8D2738AD5C5EE61A7B68D09CFD5533C1B2CDCCCF268B5CA39AC462AA2C98501F63B054239E8DF4D919F0D0796ADDBDEAA338D80ABD583F1A07DE5DE0BB4432397E947D8B8D1B3A31F2E0156239C235","SecretKey"),"eval stream");
 
 import android.media.MediaPlayer;
@@ -291,15 +299,18 @@ if(i>b) b=i;
 matrix.postScale(b,b); //长和宽放大缩小的比例
 Bitmap resizeBmp = Bitmap.createBitmap(mybitmap,0,0,mybitmap.getWidth(),mybitmap.getHeight(),matrix,true);
 canvas.drawBitmap(resizeBmp, (original.getWidth()-resizeBmp.getWidth())/2, (original.getHeight()-resizeBmp.getHeight())/2, paint);
-canvas.drawColor(Color.parseColor("#3AFFFFFF"));//白色半透明遮罩
+canvas.drawColor(Color.parseColor("#5AFFFFFF"));//白色半透明遮罩
 
-paint.setColor(getColor("黑色"));
-//字体颜色可填：红色、黑色、蓝色、蓝绿、白灰、灰色、绿色、深灰、洋红、透明、白色、黄色、随机
 
 float yoffset=textsize+padding;
-for(String line:word){
-canvas.drawText(line, padding, yoffset, paint);
-yoffset += textsize+8;}
+String[] colors = {"随机"};
+//字体颜色可填：红色、黑色、蓝色、蓝绿、白灰、灰色、绿色、深灰、洋红、透明、白色、黄色、随机
+for(int i=0; i<word.length;i++){
+paint.setColor(getColor(colors[i%colors.length]));
+canvas.drawText(word[i],padding,yoffset,paint);
+yoffset+=textsize+8;
+}
+
 String path=JavaPath+"/缓存/"+canvas+".png";
 File end=new File(path);
 if(!end.exists()) end.getParentFile().mkdirs();
@@ -484,7 +495,8 @@ public static boolean isChinese(char c) {
         }
         return false;
 }
-
+import android.os.Handler;
+import android.os.Looper;
 public void onMsg(Object data){
 String text=data.content;
 String qun=data.talker;
@@ -492,6 +504,22 @@ String wxid=data.sendTalker;
 if(data.isText()){
 if(wxid.equals(AuthorWxid)||!qun.equals(WhiteList)){
 if(wxid.equals(AuthorWxid)||mWxid.equals(wxid)){
+if(text.equals("一键开机")||text.equals("一键开启")){
+	if("1".equals(getString(qun,"开关",""))){
+	sendMsg(qun,"已经开机了");
+	}else{
+	putString(qun,"开关","1");
+	sendMsg(qun,"开机成功");
+	}
+}
+if(text.equals("一键关机")||text.equals("一键关闭")){
+	if("1".equals(getString(qun,"开关",""))){
+	putString(qun,"开关",null);
+	sendMsg(qun,"关机成功");
+	}
+}
+}
+if(mWxid.equals(wxid)){
 if(text.equals("开机")||text.equals("开启")){
 	if("1".equals(getString(qun,"开关",""))){
 	sendMsg(qun,"已经开机了");
@@ -506,13 +534,209 @@ if(text.equals("关机")||text.equals("关闭")){
 	sendMsg(qun,"关机成功");
 	}
 }
-if(text.equals("开关设置")){
+if(text.equals("开关设置")||text.equals("设置开关")){
 	开关设置(qun);
+	recallMsg(data.values);
+}
+if(text.equals("配置设置")||text.equals("设置配置")){
+	配置设置(qun);
 	recallMsg(data.values);
 }
 }
 }
 if("1".equals(getString(qun,"开关",""))){菜单(data);}
 }
-if("1".equals(getString(qun,"开关",""))){进群(data);}
+if("1".equals(getString(qun,"开关",""))){进群(data);
+if("1".equals(getString(qun,"自身撤回",""))){
+    int 撤回时间 = 30;
+    if(getInt(qun,"撤回时间",0) != null){
+        撤回时间 = getInt(qun,"撤回时间",30);
+    }
+    Handler handler = new Handler(Looper.getMainLooper());
+    handler.postDelayed(new Runnable() {
+        public void run() {
+            if(wxid.equals(mWxid)){
+                recallMsg(data.values );
+            }
+        }
+    }, 撤回时间 * 1000); // 延迟撤回时间
+}
+}
+}
+
+
+public void 配置设置(String qun){
+Activity ThisActivity=getActivity();
+boolean 底部时间=true;
+boolean 底部文案=true;
+boolean 底部尾巴=true;
+
+if(!取("开关","底部时间").equals("1")){底部时间=false;}
+if(!取("开关","底部文案").equals("1")){底部文案=false;}
+if(!取("开关","底部尾巴").equals("1")){底部尾巴=false;}
+ThisActivity.runOnUiThread(new Runnable()
+{
+public void run()
+{
+//主题风格
+AlertDialog.Builder tx=new AlertDialog.Builder(ThisActivity, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
+String[] ww={"底部时间","底部文案","底部尾巴"};
+boolean[] xx={底部时间,底部文案,底部尾巴};
+//相关名字
+TextView tc = new TextView(ThisActivity);
+tc.setText(Html.fromHtml("<font color=\"#D0ACFF\">菜单名字</font>"));
+tc.setTextSize(20);
+TextView tc1 = new TextView(ThisActivity);
+tc1.setText(Html.fromHtml("<font color=\"#71CAF8\">触发指令</font>"));
+tc1.setTextSize(20);
+TextView tc2 = new TextView(ThisActivity);
+tc2.setText(Html.fromHtml("<font color=\"#21E9FF\">发送模式</font>"));
+tc2.setTextSize(20);
+TextView tc3 = new TextView(ThisActivity);
+tc3.setText(Html.fromHtml("<font color=\"#E09C4F\">手机号码</font>"));
+tc3.setTextSize(20);
+
+final EditText editText = new EditText(ThisActivity);
+editText.setHint(Html.fromHtml("<font color=\"#A2A2A2\">不填则默认</font>"));
+//检测到换行就自动切换下一行
+editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+editText.addTextChangedListener(new TextWatcher(){
+//更改前
+public void beforeTextChanged(CharSequence charSequence,int i,int i1,int i2){}
+//更改后
+public void onTextChanged(CharSequence charSequence,int i,int i1,int i2){}
+public void afterTextChanged(Editable editable){
+//获取当前输入内容的长度
+int inputLength = editable.length();
+//字符串不能大于15
+if (inputLength>15){
+String limitedText = editable.toString().substring(0,15);
+editText.setText(limitedText);
+editText.setSelection(limitedText.length());
+}
+}
+});
+editText.setText(取("开关","菜单名字"));
+
+final EditText editText1=new EditText(ThisActivity);
+editText1.setHint(Html.fromHtml("<font color=\"#A2A2A2\">不填则默认</font>"));
+//检测到换行就自动切换下一行
+editText1.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+editText1.addTextChangedListener(new TextWatcher(){
+public void beforeTextChanged(CharSequence charSequence,int i,int i1,int i2){}
+public void onTextChanged(CharSequence charSequence,int i,int i1,int i2){}
+public void afterTextChanged(Editable editable){
+//获取当前输入内容的长度
+int inputLength = editable.length();
+if (inputLength>10){
+String limitedText = editable.toString().substring(0,10);
+editText1.setText(limitedText);
+editText1.setSelection(limitedText.length());
+}
+}
+});
+editText1.setText(取("开关","触发指令"));
+
+
+final EditText editText2=new EditText(ThisActivity);
+editText2.setHint(Html.fromHtml("<font color=\"#A2A2A2\">不填则默认文字 1图片</font>"));
+
+//检测到换行就自动切换下一行
+editText2.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+//只包含数字
+editText2.setInputType(InputType.TYPE_CLASS_NUMBER);
+//添加文本变化监听器
+editText2.addTextChangedListener(new TextWatcher(){
+public void beforeTextChanged(CharSequence s,int start,int count,int after){}
+public void onTextChanged(CharSequence s,int start,int before,int count){
+if(!s.toString().matches("[1]")) {
+editText2.getText().delete(editText2.length()-1, editText2.length());
+}
+}
+public void afterTextChanged(Editable s){}
+});
+editText2.setText(取(qun,"发送模式"));
+
+final EditText editText3=new EditText(ThisActivity);
+editText3.setHint(Html.fromHtml("<font color=\"#A2A2A2\">请输入手机号码</font>"));
+//检测到换行就自动切换下一行
+editText3.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+editText3.setInputType(InputType.TYPE_CLASS_NUMBER);
+editText3.addTextChangedListener(new TextWatcher(){
+public void beforeTextChanged(CharSequence charSequence,int i,int i1,int i2){}
+public void onTextChanged(CharSequence charSequence,int i,int i1,int i2){}
+public void afterTextChanged(Editable editable){
+//获取当前输入内容的长度
+int inputLength = editable.length();
+if (inputLength>11){
+String limitedText = editable.toString().substring(0,11);
+editText3.setText(limitedText);
+editText3.setSelection(limitedText.length());
+}
+}
+});
+String phoneNumber=取("开关","手机号码");
+if (phoneNumber.length() > 7) {
+phoneNumber=phoneNumber.substring(0,3)+"******"+phoneNumber.substring(9);
+}
+editText3.setText(phoneNumber);
+
+
+LinearLayout cy=new LinearLayout(ThisActivity);
+cy.setOrientation(LinearLayout.VERTICAL);
+//添加进弹窗
+cy.addView(tc);
+cy.addView(editText);
+cy.addView(tc1);
+cy.addView(editText1);
+cy.addView(tc2);
+cy.addView(editText2);
+cy.addView(tc3);
+cy.addView(editText3);
+tx.setTitle(Html.fromHtml("<font color=\"red\">配置设置</font>"));
+tx.setView(cy);
+tx.setPositiveButton(Html.fromHtml("<font color=\"#893BFF\">确认</font>"),new DialogInterface.OnClickListener()
+{
+public void onClick(DialogInterface dialogInterface,int i)
+{
+String tx=editText.getText().toString();
+String tx1=editText1.getText().toString();
+String tx2=editText2.getText().toString();
+String tx3=editText3.getText().toString();
+boolean[] cs=xx;
+if(cs[0]){存("开关", "底部时间","1");}else{存("开关", "底部时间",null);}
+if(cs[1]){存("开关", "底部文案","1");}else{存("开关", "底部文案",null);}
+if(cs[2]){存("开关", "底部尾巴","1");}else{存("开关", "底部尾巴",null);}
+if(!tx3.equals("")){
+if(!tx3.contains("*")){
+存("开关","手机号码",tx3);}
+}else{存("开关","手机号码",null);}
+if(!tx2.equals("")){
+存(qun,"发送模式",tx2);
+}else{存(qun,"发送模式",null);}
+if(!tx1.equals("")){
+存("开关","触发指令",tx1);
+}else{存("开关","触发指令",null);}
+if(!tx.equals("")){
+存("开关","菜单名字",tx);
+}else{存("开关","菜单名字",null);}
+Toast("设置成功");
+}
+});
+tx.setNegativeButton(Html.fromHtml("<font color=\"#E3319D\">取消</font>"),new DialogInterface.OnClickListener()
+{
+public void onClick(DialogInterface dialogInterface,int i)
+{
+//取消
+}
+});
+tx.setMultiChoiceItems(ww,xx,new DialogInterface.OnMultiChoiceClickListener(){
+public void onClick(DialogInterface dialogInterface,int which,boolean isChecked){
+xx[which]=isChecked;
+}});
+//点空白处无法取消
+tx.setCancelable(false);
+tx.show();
+}
+});
 }

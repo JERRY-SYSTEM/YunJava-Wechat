@@ -62,7 +62,7 @@ Calendar calendar=Calendar.getInstance();
 String joinGroup=joinGroup(data.content);
 JSONObject json=new JSONObject(joinGroup);
 String name="";
-if(json.has("adder")){name=json.getString("adder");}else if(json.has("names")){name=json.getString("names");}
+if(json.has("adder")){name=json.getString("adder");}else if(json.has("names")){name=json.getString("names");}else if(json.has("username")){name=json.getString("username");}
 String time=df.format(calendar.getTime());
 text="╔═╗╔═╗╔═╗╔═╗\n╟欢╢╟迎╢╟新╢╟人╢\n╚═╝╚═╝╚═╝╚═╝\n欢迎新人进群\n群名:[当前群名]\n用户:[用户名字]\n人数:[群人数]\n[当前时间]";
 if(!getString(qun,"进群欢迎内容","").equals("")){text=getString(qun,"进群欢迎内容","");}
