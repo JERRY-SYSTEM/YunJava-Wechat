@@ -1,24 +1,3 @@
-public class RandomKeyGenerator {
-    private static final String UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private static final String LOWER = UPPER.toLowerCase(Locale.ROOT);
-    private static final String DIGITS = "0123456789";
-    private static final String ALPHANUM = UPPER + LOWER + DIGITS;
-
-    private static final Random RANDOM = new SecureRandom();
-
-    public static String generateRandomKey(int length) {
-        if (length <= 0) {
-            throw new IllegalArgumentException("长度必须为正数");
-        }
-
-        StringBuilder sb = new StringBuilder(length);
-        for (int i = 0; i < length; i++) {
-            sb.append(ALPHANUM.charAt(RANDOM.nextInt(ALPHANUM.length())));
-        }
-        return sb.toString();
-    }
-
-}
 public void 回复(Object data) {
     String text=data.content;
     String qun=data.talker;
@@ -41,25 +20,7 @@ public void 回复(Object data) {
                 sendReply(data.msgId,qun,"已关闭");
                 return;
             }
-            if(text.equals("开启全局回复")) {
-                if("1".equals(getString("开关","智能回复",""))) {
-                    sendReply(data.msgId,qun,"已经开了");
-                    return;
-                }
-                putString("开关","智能回复","1");
-                sendReply(data.msgId,qun,"已开启");
-                return;
-            }
-            if(text.equals("关闭全局回复")) {
-                if(!"1".equals(getString("开关","智能回复",""))) {
-                    sendReply(data.msgId,qun,"还没开");
-                    return;
-                }
-                putString("开关", "智能回复", null);
-                sendReply(data.msgId,qun,"已关闭");
-                return;
-            }
-            if(取(qun,"智能回复").equals("1")||取("开关","智能回复").equals("1")) {
+            if(取(qun,"智能回复").equals("1")) {
                 if(text.equals("重新绑定")) {
                     String jsonString=RGLM("https://chatglm.cn/chatglm/user-api/user/refresh","");
                     String c="";
@@ -200,7 +161,6 @@ public void 回复(Object data) {
                             process.append(message);
                             message=process.toString();
                             sendReply(data.msgId,qun,message);
-                            sendm(qun,message);
                             return;
                         }
                     }
@@ -280,8 +240,7 @@ public void 回复(Object data) {
                     sendReply(data.msgId,qun,"已重置");
                     return;
                 }
-            }
-        if(取(qun,"智能回复").equals("1")||!取("开关","accessToken").equals("")&&取("开关","智能回复").equals("1")) {
+        if(!取("开关","accessToken").equals("")&&!data.isReply()) {
             text=text.trim();
             Matcher matcher=Pattern.compile("\\@(.*?)\\s").matcher(text);
             text=matcher.replaceAll("");
@@ -295,8 +254,8 @@ public void 回复(Object data) {
             String text1="";
             String text2="";
             String text3="";
-            if(text.contains("目录#")) {
-                String one=text.split("目录#")[1];
+            if(text.contains("目录#")||text.contains("#目录")) {
+                String one=text.split("目录#|#目录")[1];
                 String jsonStr=uploadFile("https://chatglm.cn/chatglm/backend-api/assistant/file_upload","file",one);
                 if(jsonStr.equals("10001")) {
                     sendReply(data.msgId,qun,"错误：文件不存在或不可读");
@@ -313,7 +272,7 @@ public void 回复(Object data) {
                     File file = new File(one);
                     long fileSize = file.length();
                     String file_url = resultObject.getString("file_url");
-                    sendReply(data.msgId,qun,"正在解读您的文件，请稍等...\n昵称：\n"+file_name+"-"+FileFormatConversion(fileSize)+"\n链接："+file_url);
+                    sendReply(data.msgId,qun,"正在解读您的文件，请稍等...\n"+file_name+"-"+FileFormatConversion(fileSize)+"\n"+file_url);
                     text3="{\"type\": \"file\",\"file\": [{\"file_id\": \""+file_id+"\",\"file_url\": \""+file_url+"\",\"file_name\": \""+file_name+"\",\"file_size\": "+fileSize+"}]}";
                     matcher = Pattern.compile("\\s目录#(.*?)\\.[^\\s]*").matcher(text);
 // 将匹配到的内容替换为空字符串
@@ -330,7 +289,7 @@ public void 回复(Object data) {
                 JSONObject resultObject = jsonObject.getJSONObject("result");
                 if(resultObject.has("image_url")) {
                     String imageUrl = resultObject.getString("image_url");
-                    sendReply(data.msgId,qun,"正在解读您的头像，请稍等...\n链接："+imageUrl);
+                    sendReply(data.msgId,qun,"正在解读您的头像，请稍等...\n"+imageUrl);
                     image.append("{\"type\": \"image\",\"image\": [{\"image_url\": \"").append(imageUrl).append("\"}]}");
                 }
             }
@@ -361,7 +320,7 @@ public void 回复(Object data) {
                     }
                     process.append(message);
                     message=process.toString();
-                    if(message.contains("Signature has expired")) {
+                    if(message.contains("Signature has expired")||message.contains("Signature verification failed")) {
                         process.delete(0, process.length());
                         String jsonString=RGLM("https://chatglm.cn/chatglm/user-api/user/refresh","");
                         String c="";
@@ -470,7 +429,10 @@ public void 回复(Object data) {
             }
             String message=process.toString();
             sendReply(data.msgId,qun,message);
+        } else if(!data.isReply()) {
+            sendReply(data.msgId,qun,"请主人发送 智能系统 来绑定");
         }
+    }
 }
 public void 智能(Object data) {
     String text=data.content;
@@ -669,7 +631,6 @@ public void 智能(Object data) {
                     process.append(message);
                     message=process.toString();
                     sendReply(data.msgId,qun,message);
-                    sendm(qun,message);
                     return;
                 }
             }
@@ -754,8 +715,8 @@ public void 智能(Object data) {
     }
     new Thread(new Runnable() {
         public void run() {
-            if(!取("开关","accessToken").equals("")) {
-                if(text.startsWith("AI")||text.startsWith("ai")) {
+            if(text.startsWith("AI")||text.startsWith("ai")) {
+                if(!取("开关","accessToken").equals("")) {
                     text=text.substring(2).trim();
                     Matcher matcher=Pattern.compile("\\@(.*?)\\s").matcher(text);
                     text=matcher.replaceAll("");
@@ -769,8 +730,8 @@ public void 智能(Object data) {
                     String text1="";
                     String text2="";
                     String text3="";
-                    if(text.contains("目录#")) {
-                        String one=text.split("目录#")[1];
+                    if(text.contains("目录#")||text.contains("#目录")) {
+                        String one=text.split("目录#|#目录")[1];
                         String jsonStr=uploadFile("https://chatglm.cn/chatglm/backend-api/assistant/file_upload","file",one);
                         if(jsonStr.equals("10001")) {
                             sendReply(data.msgId,qun,"错误：文件不存在或不可读");
@@ -787,7 +748,7 @@ public void 智能(Object data) {
                             File file = new File(one);
                             long fileSize = file.length();
                             String file_url = resultObject.getString("file_url");
-                            sendReply(data.msgId,qun,"正在解读您的文件，请稍等...\n昵称：\n"+file_name+"-"+FileFormatConversion(fileSize)+"\n链接："+file_url);
+                            sendReply(data.msgId,qun,"正在解读您的文件，请稍等...\n"+file_name+"-"+FileFormatConversion(fileSize)+"\n"+file_url);
                             text3="{\"type\": \"file\",\"file\": [{\"file_id\": \""+file_id+"\",\"file_url\": \""+file_url+"\",\"file_name\": \""+file_name+"\",\"file_size\": "+fileSize+"}]}";
                             matcher = Pattern.compile("\\s目录#(.*?)\\.[^\\s]*").matcher(text);
 // 将匹配到的内容替换为空字符串
@@ -804,7 +765,7 @@ public void 智能(Object data) {
                         JSONObject resultObject = jsonObject.getJSONObject("result");
                         if(resultObject.has("image_url")) {
                             String imageUrl = resultObject.getString("image_url");
-                            sendReply(data.msgId,qun,"正在解读您的头像，请稍等...\n链接："+imageUrl);
+                            sendReply(data.msgId,qun,"正在解读您的头像，请稍等...\n"+imageUrl);
                             image.append("{\"type\": \"image\",\"image\": [{\"image_url\": \"").append(imageUrl).append("\"}]}");
                         }
                     }
@@ -835,7 +796,7 @@ public void 智能(Object data) {
                             }
                             process.append(message);
                             message=process.toString();
-                            if(message.contains("Signature has expired")) {
+                            if(message.contains("Signature has expired")||message.contains("Signature verification failed")) {
                                 process.delete(0, process.length());
                                 String jsonString=RGLM("https://chatglm.cn/chatglm/user-api/user/refresh","");
                                 String c="";
@@ -944,125 +905,7 @@ public void 智能(Object data) {
                     }
                     String message=process.toString();
                     sendReply(data.msgId,qun,message);
-                }
-            }
-            if(text.startsWith("画图")) {
-                text=text.substring(2).trim();
-                if(text.equals("")) {
-                    return;
-                }
-                String user="0";
-                String device="0";
-                if(!取("xingye","user").equals("")) {
-                    user=取("xingye","user");
-                }
-                if(!取("xingye","device").equals("")) {
-                    device=取("xingye","device");
-                }
-                String xingye=xingye("https://api.xingyeai.com/weaver/api/v1/npc_editor/preview/avatar?app_id=600&device_platform=android&device_type=22081212C&brand=Xiaomi&device_brand=Redmi&resolution=2624*1220&os_version=14&channel=xy_YYB&version_code=1120004&version_name=1.12.004&sys_region=CN&sys_language=zh&oaid=81ffef1e1dc98fdb&ip_region=cn&os=2&is_anonymous=false&license_status=0&emulator=false&network_type=4G&user_id="+user+"&device_id="+device,"{\"prompt\":\""+text+"\",\"avatar_style_id_list\":[31,21,34]}");
-                String PainTing="";
-                JSONObject json=new JSONObject(xingye);
-                if(json.has("img_list")) {
-                    JSONArray img_list=json.getJSONArray("img_list");
-//for(int i=0; i<img_list.length();i++){
-                    for(int i=0; i<1; i++) {
-                        JSONObject list=img_list.getJSONObject(i);
-                        String url=list.getString("img_url");
-                        String name=list.getString("style_name");
-                        sendPic(qun,url);
-//PainTing+="\u7c7b\u578b:"+name+"\n链接:"+url+"\n";
-                    }
-//sendTextCard(qun,PainTing);
-                } else if(json.has("base_resp")||json.has("status_code")) {
-                    if(json.has("base_resp")) {
-                        json=json.getJSONObject("base_resp");
-                    }
-                    Integer code=json.getInt("status_code");
-                    String msg=json.getString("status_msg");
-                    if(code==1111012161) {
-                        xingye=xingye("https://api.xingyeai.com/weaver/api/v1/account/login?app_id=600&device_platform=android&device_type=22081212C&brand=Xiaomi&device_brand=Redmi&resolution=2624*1220&os_version=14&channel=xy_YYB&version_code=1120004&version_name=1.12.004&sys_region=CN&sys_language=zh&oaid="+RandomKeyGenerator.generateRandomKey(32)+"&ip_region=cn&user_id=0&os=2&user_mode=0&is_anonymous=false&license_status=0&emulator=false&network_type=4G","{\"login_type\":5}");
-                        JSONObject json=new JSONObject(xingye);
-                        user=json.getString("user_id");
-                        auth=json.getString("auth_token");
-                        device=json.getString("device_id");
-                        存("xingye","user",user);
-                        存("xingye","auth",auth);
-                        存("xingye","device",device);
-                        xingye=xingye("https://api.xingyeai.com/weaver/api/v1/npc_editor/preview/avatar?app_id=600&device_platform=android&device_type=22081212C&brand=Xiaomi&device_brand=Redmi&resolution=2624*1220&os_version=14&channel=xy_YYB&version_code=1120004&version_name=1.12.004&sys_region=CN&sys_language=zh&oaid=81ffef1e1dc98fdb&ip_region=cn&os=2&is_anonymous=false&license_status=0&emulator=false&network_type=4G&user_id="+user+"&device_id="+device,"{\"prompt\":\""+text+"\",\"avatar_style_id_list\":[31,21,34]}");
-                        JSONObject json=new JSONObject(xingye);
-                        if(json.has("img_list")) {
-                            JSONArray img_list=json.getJSONArray("img_list");
-//for(int i=0;i<img_list.length();i++){
-                            for(int i=0; i<1; i++) {
-                                JSONObject list=img_list.getJSONObject(i);
-                                String url=list.getString("img_url");
-                                String name=list.getString("style_name");
-                                sendPic(qun,url);
-//PainTing+="\u7c7b\u578b:"+name+"\n链接:"+url+"\n";
-                            }
-//sendTextCard(qun,PainTing);
-                        } else if(json.has("base_resp")||json.has("status_code")) {
-                            if(json.has("base_resp")) {
-                                json=json.getJSONObject("base_resp");
-                            }
-                            Integer code=json.getInt("status_code");
-                            String msg=json.getString("status_msg");
-                            if(code==1111012161) {
-                                sendReply(data.msgId,qun,"刷图过多，将不再生成图片");
-                                return;
-                            } else if(code==1111012121) {
-                                sendReply(data.msgId,qun,"内容涉及敏感信息");
-                                return;
-                            } else if(code==1101010121||code==1118010010) {
-                                sendReply(data.msgId,qun,msg);
-                                return;
-                            }
-                        }
-                        return;
-                    } else if(code==1111012121) {
-                        sendReply(data.msgId,qun,"内容涉及敏感信息");
-                        return;
-                    } else if(code==1101010121||code==1118010010) {
-                        xingye=xingye("https://api.xingyeai.com/weaver/api/v1/account/login?app_id=600&device_platform=android&device_type=22081212C&brand=Xiaomi&device_brand=Redmi&resolution=2624*1220&os_version=14&channel=xy_YYB&version_code=1120004&version_name=1.12.004&sys_region=CN&sys_language=zh&oaid="+RandomKeyGenerator.generateRandomKey(32)+"8fdb&ip_region=cn&user_id=0&os=2&user_mode=0&is_anonymous=false&license_status=0&emulator=false&network_type=4G","{\"login_type\":5}");
-                        JSONObject json=new JSONObject(xingye);
-                        user=json.getString("user_id");
-                        auth=json.getString("auth_token");
-                        device=json.getString("device_id");
-                        存("xingye","user",user);
-                        存("xingye","auth",auth);
-                        存("xingye","device",device);
-                        xingye=xingye("https://api.xingyeai.com/weaver/api/v1/npc_editor/preview/avatar?app_id=600&device_platform=android&device_type=22081212C&brand=Xiaomi&device_brand=Redmi&resolution=2624*1220&os_version=14&channel=xy_YYB&version_code=1120004&version_name=1.12.004&sys_region=CN&sys_language=zh&oaid=81ffef1e1dc98fdb&ip_region=cn&os=2&is_anonymous=false&license_status=0&emulator=false&network_type=4G&user_id="+user+"&device_id="+device,"{\"prompt\":\""+text+"\",\"avatar_style_id_list\":[31,21,34]}");
-                        JSONObject json=new JSONObject(xingye);
-                        if(json.has("img_list")) {
-                            JSONArray img_list=json.getJSONArray("img_list");
-//for(int i=0;i<img_list.length();i++){
-                            for(int i=0; i<1; i++) {
-                                JSONObject list=img_list.getJSONObject(i);
-                                String url=list.getString("img_url");
-                                String name=list.getString("style_name");
-                                sendPic(qun,url);
-//PainTing+="\u7c7b\u578b:"+name+"\n链接:"+url+"\n";
-                            }
-//sendTextCard(qun,PainTing);
-                        } else if(json.has("base_resp")||json.has("status_code")) {
-                            if(json.has("base_resp")) {
-                                json=json.getJSONObject("base_resp");
-                            }
-                            Integer code=json.getInt("status_code");
-                            String msg=json.getString("status_msg");
-                            if(code==1111012161) {
-                                sendReply(data.msgId,qun,"刷图过多，将不再生成图片");
-                                return;
-                            } else if(code==1111012121) {
-                                sendReply(data.msgId,qun,"内容涉及敏感信息");
-                                return;
-                            } else if(code==1101010121||code==1118010010) {
-                                sendReply(data.msgId,qun,msg);
-                                return;
-                            }
-                        }
-                    }
-                }
+                } else sendReply(data.msgId,qun,"请主人发送 智能系统 来绑定");
             }
         }
     }).start();

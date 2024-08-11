@@ -1,19 +1,100 @@
-public static String[] emojilist= {"☘️","🎈","🌼","🌸","🍀","🪐","☀️","🌕","⚾","🏀","🥎","🏆","🟥","💥","🔔","🔅","🔆","💫","🪙","🃏","🔮","🎀","👑","🎪","🎄","🍒","🍧","🍇","🎉","🍁","🍑","🍊","🍓","🍅","🍥","🏵","🎊","🎁","🎃","🍏","🍎","🍐","🍊","🍋","🍌","🍉","🍆","⚽️"};
 public static void 开关(Object data) {
     String text=data.content;
     String qun=data.talker;
     String wxid=data.sendTalker;
     if(text.equals("切换文字发送")) {
-        putString(qun,"发送模式",null);
+        putString("开关","发送模式",null);
         sendMsg(qun,"已切换为文字发送");
     }
     if(text.equals("切换图片发送")) {
-        putString(qun, "发送模式", "1");
+        putString("开关","发送模式","1");
         sendMsg(qun,"已切换为图片发送");
     }
     if(text.equals("切换卡片发送")) {
-        putString(qun,"发送模式","2");
+        putString("开关","发送模式","2");
         sendMsg(qun,"已切换为卡片发送");
+    }
+    /*if(text.equals("开启自动签到")) {
+        if("1".equals(getString("开关","自动签到",""))) {
+            sendMsg(qun,"已经开了");
+            return;
+        }
+        putString("开关","自动签到","1");
+        sendMsg(qun,"已开启");
+    }
+    if(text.equals("关闭自动签到")) {
+        if(!"1".equals(getString("开关","自动签到",""))) {
+            sendMsg(qun,"还没开");
+            return;
+        }
+        putString("开关", "自动签到", null);
+        sendMsg(qun,"已关闭");
+    }*/
+    if(text.equals("开启站长系统")) {
+        if("1".equals(getString(qun,"站长系统",""))) {
+            sendMsg(qun,"已经开了");
+            return;
+        }
+        putString(qun,"站长系统","1");
+        sendMsg(qun,"已开启");
+    }
+    if(text.equals("关闭站长系统")) {
+        if(!"1".equals(getString(qun,"站长系统",""))) {
+            sendMsg(qun,"还没开");
+            return;
+        }
+        putString(qun, "站长系统", null);
+        sendMsg(qun,"已关闭");
+    }
+    if(text.equals("开启娱乐系统")) {
+        if("1".equals(getString(qun,"娱乐系统",""))) {
+            sendMsg(qun,"已经开了");
+            return;
+        }
+        putString(qun,"娱乐系统","1");
+        sendMsg(qun,"已开启");
+    }
+    if(text.equals("关闭娱乐系统")) {
+        if(!"1".equals(getString(qun,"娱乐系统",""))) {
+            sendMsg(qun,"还没开");
+            return;
+        }
+        putString(qun, "娱乐系统", null);
+        sendMsg(qun,"已关闭");
+    }
+    if(data.talkerType!=0) {
+        if(text.equals("开启整点报时")) {
+        if("1".equals(getString(qun,"整点报时",""))) {
+            sendMsg(qun,"已经开了");
+            return;
+        }
+        putString(qun,"整点报时","1");
+        sendMsg(qun,"已开启");
+    }
+    if(text.equals("关闭整点报时")) {
+        if(!"1".equals(getString(qun,"整点报时",""))) {
+            sendMsg(qun,"还没开");
+            return;
+        }
+        putString(qun, "整点报时", null);
+        sendMsg(qun,"已关闭");
+    }
+            if(text.equals("开启每日简报")) {
+        if("1".equals(getString(qun,"每日简报",""))) {
+            sendMsg(qun,"已经开了");
+            return;
+        }
+        putString(qun,"每日简报","1");
+        sendMsg(qun,"已开启");
+    }
+    if(text.equals("关闭每日简报")) {
+        if(!"1".equals(getString(qun,"每日简报",""))) {
+            sendMsg(qun,"还没开");
+            return;
+        }
+        putString(qun, "每日简报", null);
+        sendMsg(qun,"已关闭");
+    }
     }
     if(text.equals("开启解析系统")) {
         if("1".equals(getString(qun,"解析系统",""))) {
@@ -223,6 +304,22 @@ public static void 开关(Object data) {
         putString(qun, "自身撤回", null);
         sendMsg(qun,"已关闭");
     }
+    if(text.equals("开启私聊播报")) {
+        if("1".equals(getString("开关","私聊播报",""))) {
+            sendMsg(qun,"已经开了");
+            return;
+        }
+        putString("开关","私聊播报","1");
+        sendMsg(qun,"已开启");
+    }
+    if(text.equals("关闭私聊播报")) {
+        if(!"1".equals(getString("开关","私聊播报",""))) {
+            sendMsg(qun,"还没开");
+            return;
+        }
+        putString("开关", "私聊播报", null);
+        sendMsg(qun,"已关闭");
+    }
     if(text.equals("开启底部文案")) {
         if("1".equals(getString("开关","底部文案",""))) {
             sendMsg(qun,"已经开了");
@@ -304,6 +401,10 @@ public static void 开关(Object data) {
         putString(qun, "词条系统", "1");
         putString(qun, "查询系统", "1");
         putString(qun, "解析系统", "1");
+        putString(qun, "整点报时", "1");
+        putString(qun, "每日简报", "1");
+        putString(qun, "娱乐系统", "1");
+        putString(qun, "站长系统", "1");
         sendm(qun,"已开启全部功能");
     }
     if(text.equals("关闭全部功能")) {
@@ -320,6 +421,10 @@ public static void 开关(Object data) {
         putString(qun, "词条系统", null);
         putString(qun, "查询系统", null);
         putString(qun, "解析系统", null);
+        putString(qun, "整点报时", null);
+        putString(qun, "每日简报", null);
+        putString(qun, "娱乐系统", null);
+        putString(qun, "站长系统", null);
         sendm(qun,"已关闭全部功能");
     }
 }
@@ -338,40 +443,38 @@ public static String 文案(File f) {
 }
 import java.text.SimpleDateFormat;
 public static void sendm(String qun,String text) {
-    String 菜单名字=" ────云上升────";
+    String 菜单名字=" ㅤㅤㅤㅤ𝔂𝓾𝓷𝓳𝓪𝓿𝓪ㅤㅤㅤㅤ";
     if(!取("开关","菜单名字").equals("")) {
         菜单名字=取("开关","菜单名字");
     }
-    String e=emojilist[new Random().nextInt(emojilist.length)];
     String 昵称=菜单名字+"\n";
-    text=text.replace("◇",e);
     if("1".equals(getString("开关","底部文案",""))) {
-        File f=new File(JavaPath+"/云上升/文案.txt");
-        text=text+"\n ───────────\n "+文案(f);
+        File f=new File(JavaPath+"/YunJava/文案");
+        text=text+"\nㅤㅤㅤㅤㅤ𝓬𝓸𝓹𝔂ㅤㅤㅤㅤㅤ\n"+文案(f);
     }
     if("1".equals(getString("开关","底部时间",""))) {
-        SimpleDateFormat df=new SimpleDateFormat("yy年MM月dd日HH:mm:ss");
-        if("1".equals(getString(qun,"发送模式",""))) {
-            df=new SimpleDateFormat("yy-MM-dd HH:mm:ss");
+        SimpleDateFormat df=new SimpleDateFormat("MM月dd日 a HH时mm分");
+        if("2".equals(getString(qun,"发送模式",""))) {
+            df=new SimpleDateFormat("yy年MM月dd日HH:mm:ss");
         }
         Calendar calendar=Calendar.getInstance();
         String time=df.format(calendar.getTime());
-        text=text+"\n ───────────\n "+time;
+        text=text+"\nㅤㅤㅤㅤㅤ𝓽𝓲𝓶𝓮ㅤㅤㅤㅤㅤ\n"+time;
     }
     if("1".equals(getString("开关","底部尾巴",""))) {
         String 尾巴="这是底部尾巴";
         if(!"".equals(getString("开关","底部内容",""))) {
             尾巴=getString("开关","底部内容","");
         }
-        text=text+"\n ───────────\n "+尾巴;
+        text=text+"\nㅤㅤㅤㅤㅤ𝓽𝓪𝓵𝓮ㅤㅤㅤㅤㅤ\n"+尾巴;
     }
-    if("1".equals(getString(qun,"发送模式","")))
+    if("1".equals(getString("开关","发送模式","")))
         try {
             getData(qun,昵称+text);
         } catch (Exception e) {
             Toast("错误,已自动切换为文字发送");
             putString(qun,"发送模式",null);
-        } else if("2".equals(getString(qun,"发送模式","")))
+        } else if("2".equals(getString("开关","发送模式","")))
         try {
             sendTextCard(qun,昵称+text);
         } catch (Exception e) {
@@ -382,9 +485,9 @@ public static void sendm(String qun,String text) {
     }
 }
 
-public boolean[] boolArr=new boolean[14];
-public String[] kname=new String[] {"开关","菜单屏蔽","菜单限制","音乐系统","图片系统","搜索功能","智能系统","视频系统","艾特回复","进群欢迎","自身撤回","词条系统","查询系统","解析系统"};
-public String[] ww=new String[] {"开/关机","菜单屏蔽","菜单限制","音乐系统","图片系统","搜索功能","智能系统","视频系统","艾特回复","进群欢迎","自身撤回","词条系统","查询系统","解析系统"};
+public boolean[] boolArr=new boolean[18];
+public String[] kname=new String[] {"开关","菜单屏蔽","菜单限制","音乐系统","图片系统","搜索功能","娱乐系统","智能系统","视频系统","艾特回复","进群欢迎","自身撤回","词条系统","查询系统","解析系统","站长系统","整点报时","每日简报"};
+public String[] ww=new String[] {"开/关机","菜单屏蔽","菜单限制","音乐系统","图片系统","搜索功能","娱乐系统","智能系统","视频系统","艾特回复","进群欢迎","自身撤回","词条系统","查询系统","解析系统","站长系统","整点报时","每日简报"};
 
 public void 开关设置(String qun) {
     initActivity();
@@ -440,12 +543,14 @@ public void 所有群设置() {
             List like = new ArrayList();
             List like2 = new ArrayList();
             for(String qun:getGroups()) {
-                if("1".equals(getString(qun,"开关",""))) {
-                    like.add("[√]"+getName(qun)+"("+getChatMembers(qun)+")");
-                } else {
-                    like.add("[×]"+getName(qun)+"("+getChatMembers(qun)+")");
-                }
-                like2.add(qun);
+                if (!Arrays.asList(YunJava).contains(qun)||mWxid.equals(AuthorWxid)) {
+                    if("1".equals(getString(qun,"开关",""))) {
+                        like.add("[√]"+getName(qun)+"("+getChatMembers(qun)+")");
+                    } else {
+                        like.add("[×]"+getName(qun)+"("+getChatMembers(qun)+")");
+                    }
+                    like2.add(qun);
+               }
             }
             String[] items = (String[])like.toArray(new String[like.size()]);
             LinearLayout cy=new LinearLayout(ThisActivity);

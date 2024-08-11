@@ -146,7 +146,7 @@ public void 查询(Object data) {
                             break;
                         }
                     }
-                    sendm(qun,u+"");
+                    sendWeb(qun,"百度"+text,u+"",getAvatar(wxid),"https://baike.baidu.com/item/"+text);
                     break;
                 } catch(e) {
                     sendm(qun,"没有找到");
@@ -186,21 +186,21 @@ public void 查询(Object data) {
                     String guobiao = data.getString("guobiao");
                     String updatetime = data.getString("updatetime");
                     text = "英雄:"+alias+"\n"
-                      +"提示:结果仅供参考\n"
-                      +" -------------------------\n"
-                      +"系统:"+platform+"\n"
-                      +"国标:"+guobiao+"\n"
-                      +"省标:"+provincePower+"-"+province+"\n"
-                      +"市标:"+cityPower+"-"+city+"\n"
-                      +"县标:"+areaPower+"-"+area+"\n"
-                      +"时间:"+updatetime+"\n";
+                           +"提示:结果仅供参考\n"
+                           +" -------------------------\n"
+                           +"系统:"+platform+"\n"
+                           +"国标:"+guobiao+"\n"
+                           +"省标:"+provincePower+"-"+province+"\n"
+                           +"市标:"+cityPower+"-"+city+"\n"
+                           +"县标:"+areaPower+"-"+area+"\n"
+                           +"时间:"+updatetime+"\n";
                 } else if(code==400) {
                     String msg = json.getString("msg");
                     text = "系统:"+matcher.group(1)+"-扣扣区\n提示:"+msg+"\n"
-                        +" -------------------------\n";
+                           +" -------------------------\n";
                 } else {
                     text = "系统:"+matcher.group(1)+"-扣扣区\n提示:出现未知错误\n"
-                        +" -------------------------\n";
+                           +" -------------------------\n";
                 }
                 JSONObject json1 = new JSONObject(wzwxzl);
                 Integer code1 = json.getInt("code");
@@ -218,12 +218,12 @@ public void 查询(Object data) {
                     String guobiao = data.getString("guobiao");
                     String updatetime = data.getString("updatetime");
                     text = text+" -------------------------\n"
-                      +"系统:"+platform+"\n"
-                      +"国标:"+guobiao+"\n"
-                      +"省标:"+provincePower+"-"+province+"\n"
-                      +"市标:"+cityPower+"-"+city+"\n"
-                      +"县标:"+areaPower+"-"+area+"\n"
-                      +"时间:"+updatetime;
+                           +"系统:"+platform+"\n"
+                           +"国标:"+guobiao+"\n"
+                           +"省标:"+provincePower+"-"+province+"\n"
+                           +"市标:"+cityPower+"-"+city+"\n"
+                           +"县标:"+areaPower+"-"+area+"\n"
+                           +"时间:"+updatetime;
                 } else if(code1==400) {
                     String msg = json.getString("msg");
                     text = text+"系统:"+matcher.group(1)+"-微信区\n提示:"+msg;
@@ -235,6 +235,239 @@ public void 查询(Object data) {
                 sendm(qun,"错误,请稍候再试");
                 return;
             }
+        }
+    }
+    if(text.startsWith("今日油价")) { //M.
+        text=text.substring(4);
+        if(text.equals("")) {
+            return;
+        }
+        String result=get("https://api.qqsuu.cn/api/dm-oilprice?prov="+text);
+        try {
+            JSONObject json=new JSONObject(result);
+            Integer code = json.getInt("code");
+            String msg = json.getString("msg");
+            if(code==200) {
+                JSONObject data=json.getJSONObject("data");
+                String prov=data.getString("prov");
+                String p0=data.getString("p0");
+                String p89=data.getString("p89");
+                String p92=data.getString("p92");
+                String p95=data.getString("p95");
+                String p98=data.getString("p98");
+                String time=data.getString("time");
+                text="查询地区:"+prov+"\n"
+                     +"0#柴油:"+p0+"元/L\n"
+                     +"89#汽油:"+p89+"元/L\n"
+                     +"92#汽油:"+p92+"元/L\n"
+                     +"95#汽油:"+p95+"元/L\n"
+                     +"98#汽油:"+p98+"元/L\n"
+                     +time;
+                sendm(qun,text);
+            } else if(code==250) {
+                sendm(qun,"只支持查询省级");
+            } else {
+                sendm(qun,msg);
+            }
+        } catch(e) {
+            sendm(qun,"错误,请稍候再试");
+            return;
+        }
+    }
+    if(选择==11&&text.matches("^[1-9]\\d*$")) {
+        if(地图==null||!地图.containsKey(qun+wxid)) {
+            return;
+        }
+        检查 资讯=地图.get(qun+wxid);
+        if(资讯.数量<Integer.parseInt(text)) {
+            return;
+        }
+        if(System.currentTimeMillis()/1000-资讯.时间/1000>120) {
+            地图.remove(qun+wxid);
+            选择=0;
+            return;
+        }
+        String name=取(qun,"名称",text);
+        String mainIngredient=取(qun,"食材",text);
+        String url=取(qun,"链接",text);
+        String cover=取(qun,"封面",text);
+        try {
+            sendWeb(qun,name,mainIngredient,cover,url);
+        } catch(e) {
+            sendm(qun,"错误,请稍候再试");
+            return;
+        }
+    }
+    if(text.startsWith("菜谱查询")) {
+        String name=text.substring(4).trim();
+        if(name.equals("")) {
+            return;
+        }
+        检查 临时标志=new 检查();
+        临时标志.时间=System.currentTimeMillis();
+        String result2="";
+        String jsonData=get("https://tools-api.2345.com/tools/v1/menu/category/list?type=3&page=1&pageSize=15&name="+name);
+        try {
+            JSONObject json = new JSONObject(jsonData);
+            JSONObject data=json.getJSONObject("data");
+            JSONArray resultList = data.getJSONArray("list");
+            if(resultList==null||resultList.length()==0) {
+                sendm(qun,"未搜到");
+                return;
+            }
+
+            for(int i = 0; i <resultList.length(); i++) {
+                JSONObject jsonObject = resultList.getJSONObject(i);
+                String name = jsonObject.getString("name");
+                String category = jsonObject.getString("category");
+                String url = jsonObject.getString("url");
+                String pic = jsonObject.getString("pic");
+                String mainIngredient = jsonObject.getString("mainIngredient");
+                result2+=(i+1)+"."+name+"--"+category+"\n";
+                int strB=i+1;
+                String b=String.valueOf(strB);
+                写(qun,"名称",b,name);
+                写(qun,"食材",b,mainIngredient);
+                写(qun,"链接",b,url);
+                写(qun,"封面",b,pic);
+                临时标志.数量=i+1;
+            }
+            地图.put(qun+wxid, 临时标志);
+            result2=result2+"\n请发送序号来进行查看\n两分钟内有效";
+            选择=11;
+            sendm(qun,result2);
+        } catch(e) {
+            sendm(qun,"错误,请稍候再试");
+            return;
+        }
+    }
+    if(选择==12&&text.matches("^[1-9]\\d*$")) {
+        if(地图==null||!地图.containsKey(qun+wxid)) {
+            return;
+        }
+        检查 资讯=地图.get(qun+wxid);
+        if(资讯.数量<Integer.parseInt(text)) {
+            return;
+        }
+        if(System.currentTimeMillis()/1000-资讯.时间/1000>120) {
+            地图.remove(qun+wxid);
+            选择=0;
+            return;
+        }
+        String name=取(qun,"名称",text);
+        String mainIngredient=取(qun,"类型",text);
+        String url=取(qun,"链接",text);
+        String cover=取(qun,"封面",text);
+        try {
+            sendWeb(qun,name,mainIngredient,cover,url);
+        } catch(e) {
+            sendm(qun,"错误,请稍候再试");
+            return;
+        }
+    }
+    if(text.startsWith("宠物查询")) {
+        String name=text.substring(4).trim();
+        if(name.equals("")) {
+            return;
+        }
+        检查 临时标志=new 检查();
+        临时标志.时间=System.currentTimeMillis();
+        String result2="";
+        String jsonData=get("https://api.7kcat.com/Chongwuapi/search?name="+name+"&webname=波奇宠物&page=1");
+        try {
+            JSONObject json = new JSONObject(jsonData);
+            JSONArray resultList = json.getJSONArray("data");
+            if(resultList==null||resultList.length()==0) {
+                sendm(qun,"未搜到");
+                return;
+            }
+
+            for(int i = 0; i <resultList.length(); i++) {
+                JSONObject jsonObject = resultList.getJSONObject(i);
+                String name = jsonObject.getString("name");
+                String sort = jsonObject.getString("sort");
+                String url = jsonObject.getString("url");
+                String img = jsonObject.getString("img");
+                result2+=(i+1)+"."+name+"--"+sort+"\n";
+                int strB=i+1;
+                String b=String.valueOf(strB);
+                写(qun,"名称",b,name);
+                写(qun,"类型",b,sort);
+                写(qun,"链接",b,url);
+                写(qun,"封面",b,img);
+                临时标志.数量=i+1;
+            }
+            地图.put(qun+wxid, 临时标志);
+            result2=result2+"\n请发送序号来进行点歌\n两分钟内有效";
+            选择=12;
+            sendm(qun,result2);
+        } catch(e) {
+            sendm(qun,"错误,请稍候再试");
+            return;
+        }
+    }
+    if(选择==13&&text.matches("^[1-9]\\d*$")) {
+        if(地图==null||!地图.containsKey(qun+wxid)) {
+            return;
+        }
+        检查 资讯=地图.get(qun+wxid);
+        if(资讯.数量<Integer.parseInt(text)) {
+            return;
+        }
+        if(System.currentTimeMillis()/1000-资讯.时间/1000>120) {
+            地图.remove(qun+wxid);
+            选择=0;
+            return;
+        }
+        String name=取(qun,"名称",text);
+        String content=取(qun,"内容",text);
+        String url=取(qun,"链接",text);
+        try {
+            sendWeb(qun,name,content,getAvatar(wxid),url);
+        } catch(e) {
+            sendm(qun,"错误,请稍候再试");
+            return;
+        }
+    }
+    if(text.startsWith("扩展名查询")) {
+        String name=text.substring(5).trim();
+        if(name.equals("")) {
+            return;
+        }
+        检查 临时标志=new 检查();
+        临时标志.时间=System.currentTimeMillis();
+        String result2="";
+        String jsonData=jsonPost("https://api.7kcat.com/Wenjiankuozhanming/getlist","{\"word\":\""+name+"\",\"type\":\"全部\",\"page\":1}");
+        try {
+            JSONObject json = new JSONObject(jsonData);
+            JSONArray resultList = json.getJSONArray("data");
+            if(resultList==null||resultList.length()==0) {
+                sendm(qun,"未搜到");
+                return;
+            }
+
+            for(int i = 0; i <resultList.length(); i++) {
+                JSONObject jsonObject = resultList.getJSONObject(i);
+                String name = jsonObject.getString("name");
+                String type = jsonObject.getString("type");
+                String intro = jsonObject.getString("intro");
+                String url = jsonObject.getString("url");
+                String content = jsonObject.getString("content");
+                result2+=(i+1)+"."+name.replace(".","")+"--"+type+"\n";
+                int strB=i+1;
+                String b=String.valueOf(strB);
+                写(qun,"名称",b,intro);
+                写(qun,"内容",b,content);
+                写(qun,"链接",b,url);
+                临时标志.数量=i+1;
+            }
+            地图.put(qun+wxid, 临时标志);
+            result2=result2+"\n请发送序号来进行查看\n两分钟内有效";
+            选择=13;
+            sendm(qun,result2);
+        } catch(e) {
+            sendm(qun,"错误,请稍候再试");
+            return;
         }
     }
 }

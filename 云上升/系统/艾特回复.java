@@ -3,37 +3,37 @@ public void 艾特(Object data) {
     String qun=data.talker;
     String wxid=data.sendTalker;
     if(wxid.equals(AuthorWxid)||mWxid.equals(wxid)) {
-        if(text.startsWith("设置艾特回复")) {
-            text=text.substring(6);
-            putString(qun,"艾特回复内容",text);
+        if(text.startsWith("设置回复")) {
+            text=text.substring(4);
+            putString(qun,"回复内容",text);
             sendm(qun,"已设置");
         }
-        if(text.equals("查看艾特回复内容")) {
+        if(text.equals("查看回复内容")) {
             text="还没有设置";
-            if(!getString(qun,"艾特回复内容","").equals("")) {
-                text=getString(qun,"艾特回复内容","");
+            if(!getString(qun,"回复内容","").equals("")) {
+                text=getString(qun,"回复内容","");
             }
             sendm(qun,text);
         }
-        if(text.equals("重置艾特回复内容")) {
-            putString(qun,"艾特回复内容",null);
+        if(text.equals("重置回复内容")) {
+            putString(qun,"回复内容",null);
             sendm(qun,"已重置");
         }
-        if(text.equals("查看艾特回复变量")) {
-            String c="◇当前群名:[当前群名]\n"
-                     +"◇用户名字:[用户名字]\n"
-                     +"◇当前时间:[当前时间]\n"
-                     +"◇自己名字:[自己名字]\n"
-                     +"◇消息内容:[消息内容]\n"
-                     +"◇群人数:[群人数]";
+        if(text.equals("查看回复变量")) {
+            String c="╔当前群名:[当前群名]\n"
+                     +"╠用户名字:[用户名字]\n"
+                     +"╠当前时间:[当前时间]\n"
+                     +"╠自己名字:[自己名字]\n"
+                     +"╠消息内容:[消息内容]\n"
+                     +"╚群人数:[群人数]";
             sendm(qun,c);
         }
-        if(text.equals("切换内容艾特回复")) {
-            putString(qun,"艾特回复类型",null);
+        if(text.equals("切换内容回复")) {
+            putString(qun,"回复类型",null);
             sendm(qun,"已切换为内容回复");
         }
-        if(text.equals("切换智能艾特回复")) {
-            putString(qun,"艾特回复类型","1");
+        if(text.equals("切换智能回复")) {
+            putString(qun,"回复类型","1");
             sendm(qun,"已切换为智能回复");
         }
     }
@@ -42,7 +42,7 @@ public void 艾特(Object data) {
         Pattern pattern=Pattern.compile("\\@(.*?)\\s");
         Matcher matcher=pattern.matcher(text);
         text=matcher.replaceAll("");
-        if("1".equals(getString(qun,"艾特回复类型",""))) {
+        if("1".equals(getString(qun,"回复类型",""))) {
             if(!取("开关","accessToken").equals("")) {
                 if(text.equals("")) {
                     return;
@@ -59,8 +59,8 @@ public void 艾特(Object data) {
                 String text1="";
                 String text2="";
                 String text3="";
-                if(text.contains("目录#")) {
-                    String one=text.split("目录#")[1];
+                if(text.contains("目录#")||text.contains("#目录")) {
+                    String one=text.split("目录#|#目录")[1];
                     String jsonStr=uploadFile("https://chatglm.cn/chatglm/backend-api/assistant/file_upload","file",one);
                     if(jsonStr.equals("10001")) {
                         sendReply(data.msgId,qun,"错误：文件不存在或不可读");
@@ -125,7 +125,7 @@ public void 艾特(Object data) {
                         }
                         process.append(message);
                         message=process.toString();
-                        if(message.contains("Signature has expired")) {
+                        if(message.contains("Signature has expired")||message.contains("Signature verification failed")) {
                             process.delete(0, process.length());
                             String jsonString=RGLM("https://chatglm.cn/chatglm/user-api/user/refresh","");
                             String c="";
@@ -234,15 +234,15 @@ public void 艾特(Object data) {
                 }
                 String message=process.toString();
                 sendReply(data.msgId,qun,message);
-            }
+            } else sendReply(data.msgId,qun,"请主人发送 智能系统 来绑定");
         } else {
             SimpleDateFormat df=new SimpleDateFormat("yy年MM月dd日HH:mm");
             Calendar calendar=Calendar.getInstance();
             String time=df.format(calendar.getTime());
             Messagecontent=text;
             text="[用户名字]你艾特我干嘛？";
-            if(!getString(qun,"艾特回复内容","").equals("")) {
-                text=getString(qun,"艾特回复内容","");
+            if(!getString(qun,"回复内容","").equals("")) {
+                text=getString(qun,"回复内容","");
             }
             text=text.replace("[消息内容]",Messagecontent+" ");
             text=text.replace("[当前时间]",time);

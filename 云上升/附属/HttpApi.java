@@ -1,3 +1,91 @@
+public class 睿声 {
+    public static String get(String url) {
+        try {
+            StringBuffer buffer = new StringBuffer();
+            URL urlObj = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) urlObj.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("user-agent", "Mozilla/5.0 (Linux; Android 14; 22081212C Build/UKQ1.230917.001) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Mobile Safari/537.36");
+            connection.setRequestProperty("content-type", "application/json");
+            connection.setRequestProperty("referer", "https://dash.reecho.cn/");
+            connection.setRequestProperty("origin", "https://dash.reecho.cn");
+            connection.setRequestProperty("x-requested-with", "mark.via");
+            connection.setRequestProperty("accept-encoding", "gzip, deflate, br");
+            connection.setRequestProperty("accept-language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7");
+            connection.setRequestProperty("authorization", "Bearer "+取("绑定","睿声"));
+            connection.setConnectTimeout(10000); // 连接超时时间为10秒
+            connection.setReadTimeout(10000); // 读取超时时间为10秒
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                //返回200 OK，处理响应
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line + "\n");
+                }
+                reader.close();
+            } else {
+                //处理非200响应
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getErrorStream(), "utf-8"));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line + "\n");
+                }
+                reader.close();
+            }
+            return buffer.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "发生错误: " + e.getMessage();
+        }
+    }
+    public String post(String url, String jsonPost) {
+        try {
+            StringBuffer buffer = new StringBuffer();
+            URL urlObj = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) urlObj.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Host", "v1.reecho.cn");
+            connection.setRequestProperty("user-agent", "Mozilla/5.0 (Linux; Android 14; 22081212C Build/UKQ1.230917.001) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Mobile Safari/537.36");
+            connection.setRequestProperty("content-type", "application/json");
+            connection.setRequestProperty("referer", "https://dash.reecho.cn/");
+            connection.setRequestProperty("origin", "https://dash.reecho.cn");
+            connection.setRequestProperty("x-requested-with", "mark.via");
+            connection.setRequestProperty("accept-encoding", "gzip, deflate, br");
+            connection.setRequestProperty("accept-language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7");
+            connection.setRequestProperty("authorization", "Bearer "+取("绑定","睿声"));
+            connection.setConnectTimeout(10000); // 连接超时时间为10秒
+            connection.setReadTimeout(10000);   // 读取超时时间为10秒
+            connection.setDoOutput(true);
+            OutputStream outputStream = connection.getOutputStream();
+            outputStream.write(jsonPost.getBytes(StandardCharsets.UTF_8));
+            outputStream.flush();
+            outputStream.close();
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                //返回200 OK，处理响应
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line + "\n");
+                }
+                reader.close();
+            } else {
+                //处理非200响应
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getErrorStream(), "utf-8"));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line + "\n");
+                }
+                reader.close();
+            }
+            return buffer.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "发生错误: " + e.getMessage();
+        }
+    }
+}
 public String get2(String url) {
     try {
         URL url = new URL(url);
@@ -225,55 +313,6 @@ public String get(String url,String Cookie) {
     buffer.delete(buffer.length()-1,buffer.length());
     return buffer.toString();
 }
-public static String xingye(String url, String jsonPost) {
-    try {
-        StringBuffer buffer = new StringBuffer();
-        URL urlObj = new URL(url);
-        HttpURLConnection connection = (HttpURLConnection) urlObj.openConnection();
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty("Host","api.xingyeai.com");
-        connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-        String auth="";
-        if(!取("xingye","auth").equals("")) {
-            auth=取("xingye","auth");
-        }
-        connection.setRequestProperty("x-token",auth);
-        connection.setConnectTimeout(30000); // 连接超时时间为30秒
-        connection.setReadTimeout(35000);   // 读取超时时间为35秒
-
-        connection.setDoOutput(true);
-
-        OutputStream outputStream = connection.getOutputStream();
-        outputStream.write(jsonPost.getBytes(StandardCharsets.UTF_8));
-        outputStream.flush();
-        outputStream.close();
-
-        int responseCode = connection.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            //返回200 OK，处理响应
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                buffer.append(line + "\n");
-            }
-            reader.close();
-        } else {
-            //处理非200响应
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getErrorStream(), "utf-8"));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                buffer.append(line + "\n");
-            }
-            reader.close();
-        }
-
-        return buffer.toString();
-    } catch (Exception e) {
-
-        e.printStackTrace();
-        return "发生错误: " + e.getMessage();
-    }
-}
 public String get(String url) {
     try {
         StringBuffer buffer = new StringBuffer();
@@ -321,7 +360,7 @@ public String qqLyricget(String url) {
         connection.setRequestProperty("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.105 Safari/537.36");
         connection.setRequestProperty("User-Agent", "Mozilla/5.0 (iPad; CPU OS 13_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/87.0.4280.77 Mobile/15E148 Safari/604.1");
         connection.setRequestProperty("referer", "https://y.qq.com/");
-        
+
 
 
         isr = new InputStreamReader(connection.getInputStream(), "utf-8");
@@ -438,7 +477,7 @@ public String jsonPost(String url, String jsonPost) {
         return "发生错误: " + e.getMessage();
     }
 }
-public String GLMGET(String url) {
+public String MGGET(String url) {
     try {
         StringBuffer buffer = new StringBuffer();
         URL urlObj = new URL(url);
@@ -446,20 +485,15 @@ public String GLMGET(String url) {
         connection.setRequestMethod("GET");
         connection.setConnectTimeout(5000);
         connection.setReadTimeout(5000);
-        String Bearer = "";
-        if (!取("开关","accessToken").equals("")) {
-            Bearer = 取("开关","accessToken");
-        }
-        connection.setRequestProperty("Content-Type", "application/json");
-        connection.setRequestProperty("Authorization", Bearer);
-
-
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36");
+        connection.setRequestProperty("Referer", "https://m.music.migu.cn/v4/");
+        connection.setRequestProperty("Host", "m.music.migu.cn");
+        connection.setRequestProperty("channel", "014000D");
+        connection.setRequestProperty("Cookie", "SESSION=ZTIwODkyMDQtOTE1NS00MDhlLThhMWEtMjQ0N2Y2Mzk2OTAz");
+        connection.setRequestProperty("By", "3c0effb5be907dd7fc209a9001a18713");
 
         connection.setConnectTimeout(30000); // 连接超时时间为30秒
         connection.setReadTimeout(35000);   // 读取超时时间为35秒
-
-
-
 
         int responseCode = connection.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -487,7 +521,92 @@ public String GLMGET(String url) {
         return "发生错误: " + e.getMessage();
     }
 }
+public String KWGET(String url) {
+    try {
+        StringBuffer buffer = new StringBuffer();
+        URL urlObj = new URL(url);
+        HttpURLConnection connection = (HttpURLConnection) urlObj.openConnection();
+        connection.setRequestMethod("GET");
+        connection.setConnectTimeout(5000);
+        connection.setReadTimeout(5000);
+        connection.setRequestProperty("User-Agent", "Apache-HttpClient/UNAVAILABLE (java 1.4)");
+        connection.setRequestProperty("Accept-Encoding", "identity");
+        connection.setRequestProperty("Host", "nmobi.kuwo.cn");
+        connection.setRequestProperty("Connection", "Keep-Alive");
 
+        connection.setConnectTimeout(30000); // 连接超时时间为30秒
+        connection.setReadTimeout(35000);   // 读取超时时间为35秒
+
+        int responseCode = connection.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            //返回200 OK，处理响应
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                buffer.append(line + "\n");
+            }
+            reader.close();
+        } else {
+            //处理非200响应
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getErrorStream(), "utf-8"));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                buffer.append(line + "\n");
+            }
+            reader.close();
+        }
+
+        return buffer.toString();
+    } catch (Exception e) {
+
+        e.printStackTrace();
+        return "发生错误: " + e.getMessage();
+    }
+}
+public String GLMGET(String url) {
+    try {
+        StringBuffer buffer = new StringBuffer();
+        URL urlObj = new URL(url);
+        HttpURLConnection connection = (HttpURLConnection) urlObj.openConnection();
+        connection.setRequestMethod("GET");
+        connection.setConnectTimeout(5000);
+        connection.setReadTimeout(5000);
+        String Bearer = "";
+        if (!取("开关","accessToken").equals("")) {
+            Bearer = 取("开关","accessToken");
+        }
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setRequestProperty("Authorization", Bearer);
+
+        connection.setConnectTimeout(30000); // 连接超时时间为30秒
+        connection.setReadTimeout(35000);   // 读取超时时间为35秒
+
+        int responseCode = connection.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            //返回200 OK，处理响应
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                buffer.append(line + "\n");
+            }
+            reader.close();
+        } else {
+            //处理非200响应
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getErrorStream(), "utf-8"));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                buffer.append(line + "\n");
+            }
+            reader.close();
+        }
+
+        return buffer.toString();
+    } catch (Exception e) {
+
+        e.printStackTrace();
+        return "发生错误: " + e.getMessage();
+    }
+}
 public String RGLM(String url, String jsonPost) {
     try {
         StringBuffer buffer = new StringBuffer();
@@ -588,6 +707,8 @@ public String GLM(String url, String jsonPost) {
         return "发生错误: " + e.getMessage();
     }
 }
+
+
 public String httppost1(String urlPath, String cookie,String data) {
     StringBuffer buffer = new StringBuffer();
     InputStreamReader isr = null;

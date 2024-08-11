@@ -1,4 +1,4 @@
-public String joinGroup(String xmlContent) {// 陌然
+public String joinGroup(String xmlContent) { //陌然
     DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
     DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
     InputSource is = new InputSource(new StringReader(xmlContent));
@@ -14,10 +14,10 @@ public String joinGroup(String xmlContent) {// 陌然
             NodeList memberList = linkElement.getElementsByTagName("memberlist");
             if (memberList.getLength() > 0) {
                 Node memberListNode = memberList.item(0);
-                NodeList usernameList = ((Element) memberListNode).getElementsByTagName("nickname");
-                if (usernameList.getLength() > 0) {
-                    Node usernameNode = usernameList.item(0);
-                    json.putOpt(linkName, usernameNode.getTextContent());
+                NodeList nicknameList = ((Element) memberListNode).getElementsByTagName("nickname");
+                if (nicknameList.getLength() > 0) {
+                    Node nicknameNode = nicknameList.item(0);
+                    json.putOpt(linkName, nicknameNode.getTextContent());
                 }
             }
         }
@@ -49,11 +49,11 @@ public void 进群(Object data) {
                 sendm(qun,"已重置");
             }
             if(text.equals("查看进群欢迎变量")) {
-                String c="◇当前群名:[当前群名]\n"
-                         +"◇用户名字:[用户名字]\n"
-                         +"◇当前时间:[当前时间]\n"
-                         +"◇自己名字:[自己名字]\n"
-                         +"◇群人数:[群人数]";
+                String c="╔当前群名:[当前群名]\n"
+                         +"╠用户名字:[用户名字]\n"
+                         +"╠当前时间:[当前时间]\n"
+                         +"╠自己名字:[自己名字]\n"
+                         +"╚群人数:[群人数]";
                 sendm(qun,c);
             }
         }
@@ -67,7 +67,9 @@ public void 进群(Object data) {
                 if(json.has("adder")) {
                     name=json.getString("adder");
                 } else if(json.has("names")) {
-                    name="获取失败";
+                    name=json.getString("names");
+                } else if(json.has("username")) {
+                    name=json.getString("username");
                 }
                 String time=df.format(calendar.getTime());
                 text="欢迎新人进群\n"

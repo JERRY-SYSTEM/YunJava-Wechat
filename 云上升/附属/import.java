@@ -1,5 +1,10 @@
 import org.json.*;
 
+import java.io.FileOutputStream;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+
 import android.app.AlertDialog;
 import android.app.Activity;
 import android.text.*;
@@ -51,22 +56,14 @@ import java.nio.charset.StandardCharsets;
 import mqq.manager.TicketManager;
 
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
-import com.tencent.mm.opensdk.modelmsg.WXAppExtendObject;
-import com.tencent.mm.opensdk.modelmsg.WXEmojiObject;
-import com.tencent.mm.opensdk.modelmsg.WXEnterpriseCardObject;
-import com.tencent.mm.opensdk.modelmsg.WXFileObject;
-import com.tencent.mm.opensdk.modelmsg.WXGameVideoFileObject;
-import com.tencent.mm.opensdk.modelmsg.WXImageObject;
 import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
-import com.tencent.mm.opensdk.modelmsg.WXMiniProgramObject;
 import com.tencent.mm.opensdk.modelmsg.WXMusicObject;
-import com.tencent.mm.opensdk.modelmsg.WXMusicVideoObject;
-import com.tencent.mm.opensdk.modelmsg.WXNativeGamePageObject;
-import com.tencent.mm.opensdk.modelmsg.WXStateJumpUrlInfo;
-import com.tencent.mm.opensdk.modelmsg.WXStateSceneDataObject;
-import com.tencent.mm.opensdk.modelmsg.WXTextObject;
-import com.tencent.mm.opensdk.modelmsg.WXVideoFileObject;
-import com.tencent.mm.opensdk.modelmsg.WXWeWorkObject;
-import com.tencent.mm.opensdk.modelmsg.WXWebpageObject;
-import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
-import com.tencent.mm.opensdk.modelmsg.WXWebpageObject;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import android.content.Context;
