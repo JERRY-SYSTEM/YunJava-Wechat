@@ -174,8 +174,8 @@ sendm(qun,"已重置");
 new Thread(new Runnable(){
 public void run(){
 if(!取("开关","GLMToken").equals("")){
-if(text.startsWith("GLM4")){
-text=text.substring(4).trim();
+if(text.startsWith("AI")){
+text=text.substring(2).trim();
 //回复对象文字
 Matcher matcher=Pattern.compile("\\@(.*?)\\s").matcher(text);
 text=matcher.replaceAll("");
@@ -249,11 +249,11 @@ if(process.toString().equals("")){
 process.append("出错了，请换个话题或重置对话再试！");
 sendm(qun,process.toString());
 return;}
-String message=process.toString().replace("GLM-4", "智普4");
+String message=process.toString().replace("AI", "ai");
 sendTextCard(qun,message);
 }
 }
-if(text.startsWith("\u753b\u753b")){
+if(text.startsWith("画图")){
 text=text.substring(2).trim();
 if(text.equals("")){return;}
 String user="0";String device="0";
@@ -264,15 +264,14 @@ String PainTing="";
 JSONObject json=new JSONObject(xingye);
 if(json.has("img_list")){
 JSONArray img_list=json.getJSONArray("img_list");
-for(int i = 0; i <img_list.length(); i++){
+for(int i=0; i<img_list.length();i++){
 JSONObject list=img_list.getJSONObject(i);
 String url=list.getString("img_url");
 String name=list.getString("style_name");
-
-PainTing+="\u7c7b\u578b:"+name+"[pic="+url+"]";
+PainTing+="\u7c7b\u578b:"+name+"\n链接:"+url+"\n";
 }
-} else if(json.has("base_resp")||json.has("status_msg"))
-{
+sendTextCard(qun,PainTing);
+}else if(json.has("base_resp")||json.has("status_msg")){
 xingye=xingye("https://api.xingyeai.com/weaver/api/v1/account/login?app_id=600&device_platform=android&device_type=22081212C&brand=Xiaomi&device_brand=Redmi&resolution=2624*1220&os_version=14&channel=xy_YYB&version_code=1120004&version_name=1.12.004&sys_region=CN&sys_language=zh&oaid=81ffef1e1dc98fdb&ip_region=cn&user_id=0&os=2&user_mode=0&is_anonymous=false&license_status=0&emulator=false&network_type=4G","{\"login_type\":5}");
 JSONObject json=new JSONObject(xingye);
 user=json.getString("user_id");
@@ -285,18 +284,16 @@ xingye=xingye("https://api.xingyeai.com/weaver/api/v1/npc_editor/preview/avatar?
 JSONObject json=new JSONObject(xingye);
 if(json.has("img_list")){
 JSONArray img_list=json.getJSONArray("img_list");
-for(int i = 0; i <img_list.length(); i++)
-{
+for(int i=0;i<img_list.length();i++){
 JSONObject list=img_list.getJSONObject(i);
 String url=list.getString("img_url");
 String name=list.getString("style_name");
-PainTing+="\u7c7b\u578b:"+name+"[pic="+url+"]";
+PainTing+="\u7c7b\u578b:"+name+"\n链接:"+url+"\n";
 }
-}
-
-}
-sendReplyMsg(qun,data.msgId,PainTing+"\n\n\u4f60\u8981\u7684\u56fe\u7247\u6765\u54af",2);
+sendTextCard(qun,PainTing);
 }
 
+}
+}
 }}).start();
 }

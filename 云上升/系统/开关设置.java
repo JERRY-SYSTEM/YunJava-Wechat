@@ -11,6 +11,49 @@ if(text.equals("切换图片发送")){
 putString(qun, "发送模式", "1");
 sendMsg(qun,"已切换为图片发送");
 }
+if(text.equals("开启进群欢迎")){
+if("1".equals(getString(qun,"进群欢迎",""))){
+sendMsg(qun,"已经开了");
+return;}
+putString(qun,"进群欢迎","1");
+sendMsg(qun,"已开启");
+}
+if(text.equals("关闭进群欢迎")){
+if(!"1".equals(getString(qun,"进群欢迎",""))){
+sendMsg(qun,"还没开");
+return;}
+putString(qun, "进群欢迎", null);
+sendMsg(qun,"已关闭");
+}
+if(text.equals("开启菜单屏蔽")){
+if("1".equals(getString(qun,"菜单屏蔽",""))){
+sendMsg(qun,"已经开了");
+return;}
+putString(qun,"菜单屏蔽","1");
+sendMsg(qun,"已开启");
+}
+if(text.equals("关闭菜单屏蔽")){
+if(!"1".equals(getString(qun,"菜单屏蔽","")))
+{
+sendMsg(qun,"还没开");
+return;}
+putString(qun, "菜单屏蔽", null);
+sendMsg(qun,"已关闭");
+}
+if(text.equals("开启菜单限制")){
+if("1".equals(getString(qun,"菜单限制",""))){
+sendMsg(qun,"已经开了");
+return;}
+putString(qun,"菜单限制","1");
+sendMsg(qun,"已开启");
+}
+if(text.equals("关闭菜单限制")){
+if(!"1".equals(getString(qun,"菜单限制",""))){
+sendMsg(qun,"还没开");
+return;}
+putString(qun, "菜单限制", null);
+sendMsg(qun,"已关闭");
+}
 if(text.equals("开启音乐系统")){
 if("1".equals(getString(qun,"音乐系统",""))){
 sendMsg(qun,"已经开了");
@@ -54,6 +97,20 @@ return;}
 putString(qun, "智能系统", null);
 sendMsg(qun,"已关闭");
 }
+if(text.equals("开启视频系统")){
+if("1".equals(getString(qun,"视频系统",""))){
+sendMsg(qun,"已经开了");
+return;}
+putString(qun,"视频系统","1");
+sendMsg(qun,"已开启");
+}
+if(text.equals("关闭视频系统")){
+if(!"1".equals(getString(qun,"视频系统",""))){
+sendMsg(qun,"还没开");
+return;}
+putString(qun, "视频系统", null);
+sendMsg(qun,"已关闭");
+}
 if(text.equals("开启搜索功能")){
 if("1".equals(getString(qun,"搜索功能",""))){
 sendMsg(qun,"已经开了");
@@ -66,6 +123,20 @@ if(!"1".equals(getString(qun,"搜索功能",""))){
 sendMsg(qun,"还没开");
 return;}
 putString(qun, "搜索功能", null);
+sendMsg(qun,"已关闭");
+}
+if(text.equals("开启艾特回复")){
+if("1".equals(getString(qun,"艾特回复",""))){
+sendMsg(qun,"已经开了");
+return;}
+putString(qun,"艾特回复","1");
+sendMsg(qun,"已开启");
+}
+if(text.equals("关闭艾特回复")){
+if(!"1".equals(getString(qun,"艾特回复",""))){
+sendMsg(qun,"还没开");
+return;}
+putString(qun, "艾特回复", null);
 sendMsg(qun,"已关闭");
 }
 if(text.equals("开启自身撤回")){
@@ -205,9 +276,9 @@ boolean[] boolArr;
 String[] kname;
 String[] ww;
 
-boolArr=new boolean[8];
-kname=new String[]{"开关","菜单屏蔽","菜单限制","音乐系统","图片系统","搜索功能","智能系统","自身撤回"};
-ww=new String[]{"开/关机","菜单屏蔽","菜单限制","音乐系统","图片系统","搜索功能","智能系统","自身撤回"};
+boolArr=new boolean[11];
+kname=new String[]{"开关","菜单屏蔽","菜单限制","音乐系统","图片系统","搜索功能","智能系统","视频系统","艾特回复","进群欢迎","自身撤回"};
+ww=new String[]{"开/关机","菜单屏蔽","菜单限制","音乐系统","图片系统","搜索功能","智能系统","视频系统","艾特回复","进群欢迎","自身撤回"};
 
 for(String tex: kname)
 {

@@ -8,8 +8,8 @@ import java.io.IOException;
 	{
 		try
 		{
-			新建(JavaPath + "/缓存/" + QQUin);
-			String UserData = 读(JavaPath + "/缓存/" + QQUin + "/" + SetName + ".json");
+			新建(pluginPath + "缓存/" + QQUin);
+			String UserData = 读(pluginPath + "缓存/" + QQUin + "/" + SetName + ".json");
 			JSONObject UserDataJson = null;
 			if(UserData.equals(""))
 			{
@@ -20,7 +20,7 @@ import java.io.IOException;
 				UserDataJson = new JSONObject(UserData);
 			}
 			UserDataJson.put(ItemName, data);
-			写(JavaPath + "/缓存/" + QQUin + "/" + SetName + ".json", UserDataJson.toString());
+			写(pluginPath + "缓存/" + QQUin + "/" + SetName + ".json", UserDataJson.toString());
 			return;
 		}
 		catch(Exception e)
@@ -33,7 +33,7 @@ import java.io.IOException;
 	{
 		try
 		{
-			String UserData = 读(JavaPath + "/缓存/" + QQUin + "/" + SetName + ".json");
+			String UserData = 读(pluginPath + "缓存/" + QQUin + "/" + SetName + ".json");
 			JSONObject UserDataJson = null;
 			if(UserData.equals(""))
 			{
@@ -56,8 +56,8 @@ import java.io.IOException;
 	{
 		try
 		{
-			新建(JavaPath + "/缓存/" + QQUin);
-			String UserData = 读(JavaPath + "/缓存/" + QQUin + "/" + SetName + ".json");
+			新建(pluginPath + "缓存/" + QQUin);
+			String UserData = 读(pluginPath + "缓存/" + QQUin + "/" + SetName + ".json");
 			JSONObject UserDataJson = null;
 			
 			if(UserData.equals(""))
@@ -70,7 +70,7 @@ import java.io.IOException;
 			}
 			UserDataJson.put(ItemName, String.valueOf(data));
 			
-			写(JavaPath + "/缓存/" + QQUin + "/" + SetName + ".json", UserDataJson.toString());
+			写(pluginPath + "缓存/" + QQUin + "/" + SetName + ".json", UserDataJson.toString());
 			return;
 		}
 		catch(Exception e)
@@ -84,7 +84,7 @@ import java.io.IOException;
 	{
 		try
 		{
-			String UserData = 读(JavaPath + "/缓存/" + QQUin + "/" + SetName + ".json");
+			String UserData = 读(pluginPath + "缓存/" + QQUin + "/" + SetName + ".json");
 			JSONObject UserDataJson = null;
 			if(UserData.equals(""))
 			{

@@ -1,4 +1,4 @@
-//微信音乐卡片
+//微信卡片
 public void sendMusic(String talker,String src,String name,String title,String cover){
     try{
         JSONObject musicData = new JSONObject();
@@ -7,6 +7,18 @@ public void sendMusic(String talker,String src,String name,String title,String c
         musicData.put("title",title);
         musicData.put("thumb",cover);
         sendMusicCard(talker,musicData);
+    }catch(Exception e){
+        sendMsg(talker,src);
+    }
+}
+public void sendWeb(String talker,String title,String description,String thumb,String Url){
+    try{
+    JSONObject webData = new JSONObject();
+    webData.put("title",title);
+    webData.put("description",description);
+    webData.put("thumb",thumb);
+    webData.put("webpageUrl",Url);
+    sendWebCard(talker,webData);
     }catch(Exception e){
         sendMsg(talker,src);
     }

