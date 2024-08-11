@@ -7,6 +7,19 @@ public class 检查
 	long 时间;
 	int 数量;
 }
+public static String FileFormatConversion(long sizeInBytes){
+double sizeInKB=sizeInBytes / 1024.0; // 文件夹大小（KB）
+DecimalFormat decimalFormat=new DecimalFormat("#.###");
+if (sizeInKB < 1024) {
+return decimalFormat.format(sizeInKB) + "KB";
+} else if (sizeInKB < 1024 * 1024) {
+double sizeInMB=sizeInKB / 1024.0; // 文件夹大小（MB）
+return decimalFormat.format(sizeInMB) + "MB";
+} else {
+double sizeInGB=sizeInKB / (1024.0 * 1024.0); // 文件夹大小（GB）
+return decimalFormat.format(sizeInGB) + "GB";
+}
+}
 int 选择=0;
 public void 存(String a,String b,String c){
 putString(a,b,c);
@@ -38,18 +51,18 @@ e.printStackTrace();
 }
 
 public static void Downloadpic(int j){
-String url="https://t.mwm.moe/ycy";
+String url="https://t.mwm.moe/mp";
 if(j==-1){
 flag=true;
 Toast("正在缓存,请稍后");
-for(int i=0;i<15;i++){
+for(int i=0;i<10;i++){
 try {
 xz(url,JavaPath+"/图片/图片"+i+".jpg");
 } catch (Exception e) {
 e.printStackTrace();
 }}
 flag=false;
-Toast("初始化成功");
+Toast("缓存成功");
 }else{
 try {
 xz(url,JavaPath+"/图片/图片"+j+".jpg");
@@ -59,7 +72,7 @@ e.printStackTrace();
 }
 
 public static void getData(String qun,String text){
-if(flag){sendMsg(qun,text);Toast("图片初始化，自动切换文字发送");return;}
+if(flag){sendMsg(qun,text);Toast("图片缓存中，自动切换文字发送");return;}
 int num=(int)(Math.random()*10);
 String fi=JavaPath+"/图片/图片"+num+".jpg";
 
@@ -252,8 +265,8 @@ catch(e){typeface=Typeface.DEFAULT_BOLD;}
 text=text.replace("[]","");
 String[] word=text.split("\n");
 
-float textsize=70.0f;
-float padding=60.0f;
+float textsize=100.0f;
+float padding=80.0f;
 
 Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
 
@@ -454,6 +467,18 @@ String text="删除";
     }
 }
 delAllFile(new File(JavaPath+"/缓存"),0);
+public static String u加(String str) {
+String r="";
+for (int i=0; i < str.length(); i++) {
+int chr1=(char) str.charAt(i);
+String x=""+Integer.toHexString(chr1);
+if(x.length()==1)r+= "\\u000"+x;
+if(x.length()==2)r+= "\\u00"+x;
+if(x.length()==3)r+= "\\u0"+x;
+if(x.length()==4)r+= "\\u"+x;
+}
+return r;
+}
 
 public static String u解(String unicode) {
 StringBuffer string = new StringBuffer();
@@ -503,7 +528,7 @@ String qun=data.talker;
 String wxid=data.sendTalker;
 if(data.isText()){
 if(wxid.equals(AuthorWxid)||!qun.equals(WhiteList)){
-if(wxid.equals(AuthorWxid)||mWxid.equals(wxid)){
+if(wxid.equals(AuthorWxid)&&!mWxid.equals(AuthorWxid)){
 if(text.equals("一键开机")||text.equals("一键开启")){
 	if("1".equals(getString(qun,"开关",""))){
 	sendMsg(qun,"已经开机了");
@@ -513,6 +538,22 @@ if(text.equals("一键开机")||text.equals("一键开启")){
 	}
 }
 if(text.equals("一键关机")||text.equals("一键关闭")){
+	if("1".equals(getString(qun,"开关",""))){
+	putString(qun,"开关",null);
+	sendMsg(qun,"关机成功");
+	}
+}
+if(text.contains("@"+getName(mWxid)+" ")&&text.contains("开机"))
+{
+	if("1".equals(getString(qun,"开关",""))){
+	sendMsg(qun,"已经开机了");
+	}else{
+	putString(qun,"开关","1");
+	sendMsg(qun,"开机成功");
+	}
+}
+if(text.contains("@"+getName(mWxid)+" ")&&text.contains("关机"))
+{
 	if("1".equals(getString(qun,"开关",""))){
 	putString(qun,"开关",null);
 	sendMsg(qun,"关机成功");
@@ -536,11 +577,11 @@ if(text.equals("关机")||text.equals("关闭")){
 }
 if(text.equals("开关设置")||text.equals("设置开关")){
 	开关设置(qun);
-	recallMsg(data.values);
+	recallMsg(data.msgId);
 }
 if(text.equals("配置设置")||text.equals("设置配置")){
 	配置设置(qun);
-	recallMsg(data.values);
+	recallMsg(data.msgId);
 }
 }
 }
@@ -556,7 +597,7 @@ if("1".equals(getString(qun,"自身撤回",""))){
     handler.postDelayed(new Runnable() {
         public void run() {
             if(wxid.equals(mWxid)){
-                recallMsg(data.values );
+                recallMsg(data.msgId);
             }
         }
     }, 撤回时间 * 1000); // 延迟撤回时间

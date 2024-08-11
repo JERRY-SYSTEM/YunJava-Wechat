@@ -61,13 +61,13 @@ SimpleDateFormat df=new SimpleDateFormat("yy年MM月dd日HH:mm");
 Calendar calendar=Calendar.getInstance();
 String joinGroup=joinGroup(data.content);
 JSONObject json=new JSONObject(joinGroup);
-String name="";
-if(json.has("adder")){name=json.getString("adder");}else if(json.has("names")){name=json.getString("names");}else if(json.has("username")){name=json.getString("username");}
+String name="获取失败";
+if(json.has("adder")){name=getName(json.getString("adder"));}else if(json.has("names")){name=getName(json.getString("names"));}else if(json.has("username")){name=getName(json.getString("username"));}
 String time=df.format(calendar.getTime());
 text="╔═╗╔═╗╔═╗╔═╗\n╟欢╢╟迎╢╟新╢╟人╢\n╚═╝╚═╝╚═╝╚═╝\n欢迎新人进群\n群名:[当前群名]\n用户:[用户名字]\n人数:[群人数]\n[当前时间]";
 if(!getString(qun,"进群欢迎内容","").equals("")){text=getString(qun,"进群欢迎内容","");}
 text=text.replace("[当前时间]",time);
-text=text.replace("[用户名字]",getName(name));
+text=text.replace("[用户名字]",name);
 text=text.replace("[当前群名]",getName(qun));
 text=text.replace("[自己名字]",getName(mWxid));
 text=text.replace("[群人数]",String.valueOf(getChatMembers(qun)));

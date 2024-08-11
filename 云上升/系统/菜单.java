@@ -6,14 +6,50 @@ public void 菜单(Object data){
 String text=data.content;
 String qun=data.talker;
 String wxid=data.sendTalker;
+/*
+if(text.startsWith("说")){
+text=text.substring(1);
+String user="0";
+String device="0";
+String tone="Bingjiao_jiejie";
+if(!取("xingye","user").equals("")){user=取("xingye","user");}
+if(!取("xingye","device").equals("")){device=取("xingye","device");}
+if(!取("xingye","tone").equals("")){tone=取("xingye","tone");}
+String xingye=xingye("https://api.xingyeai.com/weaver/api/v1/npc_editor/preview/tone?app_id=600&user_id="+user+"&device_id="+device,"{\"prompt\":\""+text+"\",\"tone\":{\""+tone+"\":100}}");
+JSONObject xingyeObject = new JSONObject(xingye);
+if(xingyeObject.has("wav_url")){
+String xingyePtt=xingyeObject.getString("wav_url");
+sendVoice(qun,xingyePtt);
+}else{
+if(xingyeObject.has("base_resp")||xingyeObject.has("status_msg"))
+{
+String xingye=xingye("https://api.xingyeai.com/weaver/api/v1/account/login?app_id=600&device_platform=android&device_type=22081212C&brand=Xiaomi&device_brand=Redmi&resolution=2624*1220&os_version=14&channel=xy_YYB&version_code=1120004&version_name=1.12.004&sys_region=CN&sys_language=zh&oaid=81ffef1e1dc98fdb&ip_region=cn&user_id=0&os=2&user_mode=0&is_anonymous=false&license_status=0&emulator=false&network_type=4G","{\"login_type\":5}");
+JSONObject json=new JSONObject(xingye);
+user=json.getString("user_id");
+auth=json.getString("auth_token");
+device=json.getString("device_id");
+存("xingye","user",user);
+存("xingye","auth",auth);
+存("xingye","device",device);
+if(!取("xingye","tone").equals("")){tone=取("xingye","tone");}
+xingye=xingye("https://api.xingyeai.com/weaver/api/v1/npc_editor/preview/tone?app_id=600&user_id="+user+"&device_id="+device,"{\"prompt\":\""+text+"\",\"tone\":{\""+tone+"\":100}}");
+xingyeObject = new JSONObject(xingye);
+if(xingyeObject.has("wav_url")){
+xingyePtt=xingyeObject.getString("wav_url");
+sendVoice(qun,xingyePtt);
+}
+}
+}
+}
+*/
 if(wxid.equals(AuthorWxid)||mWxid.equals(wxid)){开关(data);}
 if("1".equals(getString(qun,"艾特回复",""))){艾特(data);}
 String 菜单限制="";
 if("1".equals(取(qun,"菜单限制"))){菜单限制=mWxid;}else{菜单限制=data.sendTalker;}
 if(wxid.equals(AuthorWxid)||菜单限制.equals(wxid)){
+if("1".equals(getString(qun,"智能系统",""))){智能(data);}
 if("1".equals(getString(qun,"音乐系统",""))){音乐(data);}
 if("1".equals(getString(qun,"图片系统",""))){图片(data);}
-if("1".equals(getString(qun,"智能系统",""))){智能(data);}
 if("1".equals(getString(qun,"搜索功能",""))){搜索(data);}
 if("1".equals(getString(qun,"视频系统",""))){视频(data);}
 if(!"1".equals(取(qun,"菜单屏蔽"))){
@@ -100,6 +136,7 @@ String c="◇点歌+歌名\n"
 +"◇VIP点歌+歌名\n"
 +"◇抖音点歌+歌名\n"
 +"◇酷我点歌+歌名\n"
++"◇网易热歌◇网易新歌\n"
 +"◇开启/关闭音乐系统["+音乐系统+"]";
 sendm(qun,c);}
 if(text.equals("图片系统")){
@@ -166,7 +203,7 @@ if(text.equals("智能系统")){
 String Token="";
 String 手机号码="";
 String 智能系统="";
-if(取("开关","GLMToken").equals("")){Token="未绑定";}else{Token="已绑定";}
+if(取("开关","accessToken").equals("")){Token="未绑定";}else{Token="已绑定";}
 if(取("开关","手机号码").equals("")){手机号码="未绑定";}else{手机号码="已绑定";}
 if("1".equals(getString(qun,"智能系统",""))){智能系统="开";}else{智能系统="关";}
 String c="◇AI+问题\n"
@@ -177,8 +214,8 @@ String c="◇AI+问题\n"
 +"◇重置智能体\n"
 +"发送[配置设置]绑定手机号\n"
 +"◇手机状态:"+手机号码+"\n"
-+"◇发送验证码\n"
-+"◇填写+验证码\n"
++"◇获取验证码\n"
++"然后输入[验证码]即可绑定\n"
 +"◇清除绑定状态\n"
 +"◇绑定状态:"+Token+"\n"
 +"◇开启/关闭智能系统["+智能系统+"]";

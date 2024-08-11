@@ -1,4 +1,178 @@
 import java.nio.charset.StandardCharsets;
+public static String getQrCodePost(String actionUrl, String imageUrl) {
+        String result = "";
+        String BOUNDARY = UUID.randomUUID().toString();
+        String PREFIX = "--", LINEND = "\r\n";
+        String MULTIPART_FROM_DATA = "multipart/form-data";
+        String CHARSET = "UTF-8";
+        try {
+            // 下载图片链接的内容
+            URL url = new URL(imageUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setReadTimeout(10 * 1000);
+            conn.setDoInput(true);
+            conn.setRequestMethod("GET");
+            // 检查连接是否成功
+            if (conn.getResponseCode() != 200) {
+            return "10001";
+            }
+            // 获取图片内容
+            InputStream inputStream = conn.getInputStream();
+            byte[] imageBytes = inputStream.readAllBytes();
+            inputStream.close();
+            // 上传图片
+            conn = (HttpURLConnection) new URL(actionUrl).openConnection();
+            conn.setReadTimeout(10 * 1000);
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+            conn.setUseCaches(false);
+            conn.setRequestMethod("POST");
+            String Bearer = "";
+        if (!取("开关","accessToken").equals("")) {
+            Bearer = 取("开关","accessToken");
+        }
+            conn.setRequestProperty("Connection", "Keep-Alive");
+            conn.setRequestProperty("authorization",Bearer);
+            conn.setRequestProperty("Content-Type", MULTIPART_FROM_DATA + ";boundary=" + BOUNDARY);
+            DataOutputStream outStream = new DataOutputStream(conn.getOutputStream());
+            // 发送图片数据
+            outStream.writeBytes(PREFIX + BOUNDARY + LINEND);
+            outStream.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"image.jpg\"" + LINEND);
+            outStream.writeBytes("Content-Type: application/octet-stream" + LINEND);
+            outStream.writeBytes(LINEND);
+            outStream.write(imageBytes);
+            outStream.writeBytes(LINEND);
+            // 请求结束标志
+            outStream.writeBytes(PREFIX + BOUNDARY + PREFIX + LINEND);
+            outStream.flush();
+            // 获取响应
+            int responseCode = conn.getResponseCode();
+            if (responseCode == 200) {
+                InputStream responseStream = conn.getInputStream();
+                BufferedReader responseReader = new BufferedReader(new InputStreamReader(responseStream));
+                String responseLine;
+                while ((responseLine = responseReader.readLine()) != null) {
+                    result += responseLine;
+                }
+                responseReader.close();
+            } else {
+                throw new IOException( responseCode);
+            }
+            outStream.close();
+            conn.disconnect();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+}
+public static String uploadFile(String urlStr, String formName, String filePath) {
+        long start = System.currentTimeMillis();
+        File file = new File(filePath.replace("\\/","/"));
+        if (!file.exists() || !file.canRead()) {
+            return "10001";
+        }
+        long fileSize = file.length();
+        if (fileSize > 20 * 1024 * 1024) {
+        return "10002";
+         }
+        String baseResult = null;
+        try {
+            final String newLine = "\r\n";
+            final String boundaryPrefix = "--";
+            String BOUNDARY = "------" + System.currentTimeMillis();// 模拟数据分隔线
+            URL url = new URL(urlStr);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");// 设置为POST请求
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            String Bearer = "";
+            if (!取("开关","accessToken").equals("")) {
+            Bearer = 取("开关","accessToken");
+            }
+            conn.setRequestProperty("Connection", "keep-alive");
+            conn.setRequestProperty("Accept","application/json, text/plain, */*");
+            conn.setRequestProperty("authorization",Bearer);
+            conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + BOUNDARY);
+            OutputStream out = conn.getOutputStream();
+            StringBuilder sb = new StringBuilder();
+            sb.append(boundaryPrefix);
+            sb.append(BOUNDARY);
+            sb.append(newLine);
+            sb.append("Content-Disposition: form-data; name=\"").append(formName).append("\";filename=\"").append(file.getName()).append("\"").append(newLine);
+            String extension = "zip";
+            String filename = file.getName();
+            int i = filename.lastIndexOf('.');
+            if (i > 0)
+            {
+            extension = filename.substring(i+1); 
+            }
+            sb.append("Content-Type: application/"+extension);
+            sb.append(newLine);
+            sb.append(newLine);
+            out.write(sb.toString().getBytes());// 将参数头的数据写入到输出流中
+  DataInputStream in = new DataInputStream(new FileInputStream(file));// 数据输入流,用于读取文件数据
+byte[] bufferOut = new byte[2 * 1024* 1024]; // 2 M
+int bytes = 0;
+final int uploadAvailable = in.available();
+int curUploadSize = 0;
+StringBuilder prgBar = new StringBuilder();
+long duration = System.currentTimeMillis();
+while ((bytes = in.read(bufferOut)) != -1) {// 每次读2M数据,并且将文件数据写入到输出流中
+    out.write(bufferOut, 0, bytes);
+    curUploadSize += bytes;
+    if ((System.currentTimeMillis() - duration) >= 100) {
+        prgBar.append("=");
+        String percent = String.format("%.2f", (curUploadSize / (float)uploadAvailable) * 100);
+        String tail = "=>[" + percent + "]";
+        System.out.println(prgBar.toString() + tail);
+        duration = System.currentTimeMillis();
+    }
+}
+            System.out.println(prgBar.toString() + "==>[" + 100 + "]");
+            System.out.println("send tcp packet data..");
+            out.write(newLine.getBytes());
+            in.close();
+            byte[] end_data = (newLine + boundaryPrefix + BOUNDARY + boundaryPrefix + newLine).getBytes();
+            out.write(end_data);
+            out.flush();
+            out.close();
+            StringBuilder builder = new StringBuilder();
+            builder.append(conn.getResponseCode()) //<===注意，实际发送请求的代码段就在这里
+                    .append(" ")
+                    .append(conn.getResponseMessage())
+                    .append("\n");
+            Map map = conn.getHeaderFields();
+            for (Map.Entry entry : map.entrySet()) {
+                if (entry.getKey() == null)
+                    continue;
+                builder.append(entry.getKey())
+                        .append(": ");
+                List headerValues = entry.getValue();
+                Iterator it = headerValues.iterator();
+                if (it.hasNext()) {
+                    builder.append(it.next());
+                    while (it.hasNext()) {
+                        builder.append(", ")
+                                .append(it.next());
+                    }
+                }
+                builder.append("\n");
+            }
+            System.out.println(builder);
+            //读取响应体
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line = null;
+            StringBuilder retStr = new StringBuilder("");
+            while ((line = reader.readLine()) != null) {
+                retStr.append(line);
+            }
+            baseResult = retStr.toString();
+            conn.disconnect();
+        } catch (Exception e) {
+            baseResult = e.getMessage();
+        }
+        return baseResult;
+}
 public String get(String url,String Cookie) {
 		StringBuffer buffer = new StringBuffer();
             InputStreamReader isr = null;
@@ -117,6 +291,7 @@ public String get(String url) {
         return "发生错误: " + e.getMessage();
     }
 }
+
 public String douyinget(String url) {
     try {
         URL urlObj = new URL(url);
@@ -196,8 +371,8 @@ public String GLMGET(String url) {
         connection.setConnectTimeout(5000);
         connection.setReadTimeout(5000);
         String Bearer = "";
-        if (!取("开关","GLMToken").equals("")) {
-            Bearer = 取("开关","GLMToken");
+        if (!取("开关","accessToken").equals("")) {
+            Bearer = 取("开关","accessToken");
         }
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("Authorization", Bearer);
@@ -237,7 +412,56 @@ public String GLMGET(String url) {
     }
 }
 
+public String RGLM(String url, String jsonPost) {
+    try {
+        StringBuffer buffer = new StringBuffer();
+        URL urlObj = new URL(url);
+        HttpURLConnection connection = (HttpURLConnection) urlObj.openConnection();
+        connection.setRequestMethod("POST");
+        String Bearer = "";
 
+        if (!取("开关","refreshtoken").equals("")) {
+            Bearer = 取("开关","refreshtoken");
+        }
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setRequestProperty("authorization", Bearer);
+
+        connection.setConnectTimeout(30000); // 连接超时时间为30秒
+        connection.setReadTimeout(35000);   // 读取超时时间为35秒
+
+        connection.setDoOutput(true);
+
+        OutputStream outputStream = connection.getOutputStream();
+        outputStream.write(jsonPost.getBytes(StandardCharsets.UTF_8));
+        outputStream.flush();
+        outputStream.close();
+
+        int responseCode = connection.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            //返回200 OK，处理响应
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                buffer.append(line + "\n");
+            }
+            reader.close();
+        } else {
+            //处理非200响应
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getErrorStream(), "utf-8"));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                buffer.append(line + "\n");
+            }
+            reader.close();
+        }
+
+        return buffer.toString();
+    } catch (Exception e) {
+
+        e.printStackTrace();
+        return "发生错误: " + e.getMessage();
+    }
+}
 public String GLM(String url, String jsonPost) {
     try {
         StringBuffer buffer = new StringBuffer();
@@ -246,8 +470,8 @@ public String GLM(String url, String jsonPost) {
         connection.setRequestMethod("POST");
         String Bearer = "";
 
-        if (!取("开关","GLMToken").equals("")) {
-            Bearer = 取("开关","GLMToken");
+        if (!取("开关","accessToken").equals("")) {
+            Bearer = 取("开关","accessToken");
         }
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("Authorization", Bearer);

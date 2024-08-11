@@ -244,6 +244,7 @@ sendm(qun,result2);
 sendm(qun,"错误,请稍候再试");
 return;}
 }
+
 if(text.startsWith("点歌")){
 text=text.substring(2).trim();
 if(text.equals("")){return;}

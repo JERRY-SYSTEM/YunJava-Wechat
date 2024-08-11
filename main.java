@@ -1,8 +1,8 @@
 import org.json.*;
 //勿改
-String 当前版本="0.6";
+String 当前版本="1.0";
 String 脚本作者="云上升";
-String 更新时间="24年3月27日";
+String 更新时间="24年4月9日";
 //附加
 new Thread(new Runnable(){
 public void run(){
