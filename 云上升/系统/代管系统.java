@@ -2,7 +2,7 @@ public void 代管(Object data) {
 String text=data.content;
 String qun=data.talker;
 String wxid=data.sendTalker;
-    File 代管=new File(JavaPath+"/数据/代管/"+qun+"/代管.txt");
+    File 代管=new File(JavaPath+"/数据/"+qun+"/代管.txt");
     if(data.isReply()) {
     String wxid=getElementContent(data.content,"chatusr");
     String text=getElementContent(data.content,"title");

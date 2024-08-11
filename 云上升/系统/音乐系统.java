@@ -40,9 +40,7 @@ public String post(String urlPath, String cookie,String data) {
     return buffer.toString();
 }
 public static final String iv = "0102030405060708";
-
 String mima="91789428";
-
 public static final String modulus = "00e0b509f6259df8642dbc35662901477df22677ec152b5ff68ace615bb7b725152b3ab17a876aea8a5aa76d2e417629ec4ee341f56135fccf695280104e0312ecbda92557c93870114af6c9d05c4f7f0c3685b7a46bee255932575cce10b424d813cfe4875d3e82047b97ddef52741d546b8e289dc6935b3ece0462db0a22b8e7";
 public static final String pubKey="010001";
 public static final String presetKey = "0CoJUm6Qyw8W8jud";
@@ -131,7 +129,7 @@ public String GetNeteaseMusicSongUrl(String id,int br) {
             return GetNeteaseMusicSongUrl(id);
         }*/
         //return SongUrl.replace("authSecret=","authSecret\\u003d");
-        return "https://music-api2.cenguigui.cn/?wy&id="+id+"&type=song&format=mp3&level=jymaster";
+        return "https://music-api2.cenguigui.cn/?wy&id="+id+"&type=song&format=mp3&level=lossless";
     } catch(Exception e) {
         Toast("网易音乐"+id+"直链1获取失败\n"+e);
         return GetNeteaseMusicSongUrl(id);
@@ -236,7 +234,12 @@ public void 音乐(Object data) {
     String text=data.content;
     String qun=data.talker;
     String wxid=data.sendTalker;
-    if(选择==1&&text.matches("^[1-9]\\d*$")) {
+    if(选择==1&&text.matches("^(链接|[1-9])\\d*$")) {
+        int sendtype=0;
+        if(text.startsWith("链接")) {
+            text=text.replace("链接","");
+            sendtype=1;
+        }
         if(地图==null||!地图.containsKey(qun+wxid)) {
             return;
         }
@@ -256,13 +259,18 @@ public void 音乐(Object data) {
             String 封面=取(qun,"封面",text);
             String 链接=取(qun,"链接",text);
             String 歌词=取(qun,"歌词",text);
-            if(歌词.equals("")) {
-                歌词="";
-            } else {
-                歌词="";
-                //歌词=get(歌词).replaceAll("\\<.*?\\>","").replaceAll("\\[(.*?),(.*?)\\]", "[$1]");
+            if(sendtype==0) {
+                if(歌词.equals("")) {
+                    歌词="";
+                } else {
+                    歌词="";
+                    //歌词=get(歌词).replaceAll("\\<.*?\\>","").replaceAll("\\[(.*?),(.*?)\\]", "[$1]");
                 }
-            sendMusic(qun,链接,作者,标题,封面,歌词);
+                sendMusic(qun,链接,作者,标题,封面,歌词);
+            } else {
+                String Music=标题+" - "+作者+"\n"+链接;
+                sendMsg(qun,Music);
+            }
         } catch(e) {
             sendm(qun,"错误,请稍候再试");
             return;
@@ -303,12 +311,17 @@ public void 音乐(Object data) {
             写(qun,"歌词",b,歌词);
         }
         地图.put(qun+wxid,临时标志);
-        result2=result2+"\n请发送序号来进行点歌\n两分钟内有效";
+        result2=result2+"\n发送序号或链接进行点歌\n两分钟内有效";
         sendm(qun,result2);
         选择=1;
     }
 
-    if(选择==2&&text.matches("^[1-9]\\d*$")) {
+    if(选择==2&&text.matches("^(链接|[1-9])\\d*$")) {
+        int sendtype=0;
+        if(text.startsWith("链接")) {
+            text=text.replace("链接","");
+            sendtype=1;
+        }
         if(地图==null||!地图.containsKey(qun+wxid)) {
             return;
         }
@@ -334,12 +347,7 @@ public void 音乐(Object data) {
             JSONObject dataObject = req0Object.getJSONObject("data");
             JSONArray sipArray = dataObject.getJSONArray("sip");
             String firstSip = sipArray.getString(0);
-            JSONArray midurlinfoArray = dataObject.getJSONArray("midurlinfo");
-            JSONObject midurlinfoObject = midurlinfoArray.getJSONObject(0);
-            String purl = midurlinfoObject.getString("purl");
-            if(purl.equals("")) {
-                song=song+"(试听)";
-                String url2=httppost1("https://u.y.qq.com/cgi-bin/musicu.fcg","","{\"comm\":{\"uin\":\"1052906040\",\"authst\":\"\",\"mina\":1,\"appid\":1109523715,\"ct\":29},\"urlReq0\":{\"module\":\"vkey.GetVkeyServer\",\"method\":\"CgiGetVkey\",\"param\":{\"guid\":\"7982463958\",\"songmid\":[\""+c+"\"],\"songtype\":[0],\"filename\":[\"RS02"+media_mid+".mp3\"],\"uin\":\"1052906040\",\"loginflag\":1,\"platform\":\"23\",\"h5to\":\"speed\"}}}");
+            JSONArray midurlinfoArray = dataObject.getJSONArray("miduequals,"{\"comm\":{\"uin\":\"1052906040\",\"authst\":\"\",\"mina\":1,\"appid\":1109523715,\"ct\":29},\"urlReq0\":{\"module\":\"vkey.GetVkeyServer\",\"method\":\"CgiGetVkey\",\"param\":{\"guid\":\"7982463958\",\"songmid\":[\""+c+"\"],\"songtype\":[0],\"filename\":[\"RS02"+media_mid+".mp3\"],\"uin\":\"1052906040\",\"loginflag\":1,\"platform\":\"23\",\"h5to\":\"speed\"}}}");
                 if(url2.contains("\"purl\":\"")) {
                     int index3 = url2.lastIndexOf("\"purl\":\"");
                     String text3 = url2.substring(index3 + 8);
@@ -348,15 +356,19 @@ public void 音乐(Object data) {
                     purl=u解(text3.substring(0,rd3));
                 }
             }*/
-            String firstSip="https://music-api2.cenguigui.cn/?qq&id="+c+"&type=song&format=mp3&level=jymaster";
-            String cover="http://y.gtimg.cn/music/photo_new/T002R500x500M000"+pmid+".jpg";
-            String songLyric=qqLyricget("https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg?format=json&nobase64=1&g_tk=5381&songmid="+c);
-            JSONObject Lyric = new JSONObject(songLyric);
-            if(Lyric.has("lyric")) {
-                String json_lyric = Lyric.getString("lyric");
-                sendMusic(qun,firstSip,singer,song,cover,json_lyric);
+            String firstSip="https://music-api2.cenguigui.cn/?qq&id="+c+"&type=song&format=mp3&level=lossless";
+            if(sendtype==0) {
+                String cover="http://y.gtimg.cn/music/photo_new/T002R500x500M000"+pmid+".jpg";
+                String songLyric=qqLyricget("https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg?format=json&nobase64=1&g_tk=5381&songmid="+c);
+                JSONObject Lyric = new JSONObject(songLyric);
+                String json_lyric="";
+                if(Lyric.has("lyric")) {
+                    json_lyric=Lyric.getString("lyric");
+                }
+                sendMusic(qun,fetchRedirectUrl(firstSip),singer,song,cover,json_lyric);
             } else {
-                sendMusic(qun,firstSip,singer,song,cover,"");
+                String Music=song+" - "+singer+"\n"+fetchRedirectUrl(firstSip);
+                sendMsg(qun,Music);
             }
         } catch(e) {
             sendm(qun,"错误,请稍候再试");
@@ -408,7 +420,7 @@ public void 音乐(Object data) {
                     临时标志.数量=i+1;
                 }
                 地图.put(qun+wxid, 临时标志);
-                result2=result2+"\n请发送序号来进行点歌\n两分钟内有效";
+                result2=result2+"\n发送序号或链接进行点歌\n两分钟内有效";
                 选择=2;
             }
             sendm(qun,result2);
@@ -417,7 +429,12 @@ public void 音乐(Object data) {
             return;
         }
     }
-    if(选择==5&&text.matches("^[1-9]\\d*$")) {
+    if(选择==5&&text.matches("^(链接|[1-9])\\d*$")) {
+        int sendtype=0;
+        if(text.startsWith("链接")) {
+            text=text.replace("链接","");
+            sendtype=1;
+        }
         if(地图==null||!地图.containsKey(qun+wxid)) {
             return;
         }
@@ -434,21 +451,25 @@ public void 音乐(Object data) {
         String singer=取(qun,"歌手",text);
         String songname=取(qun,"歌曲",text);
         try {
-            String html=get("https://y.music.163.com/m/song?id="+mid);
+            String audio=GetNeteaseMusicSongUrl(mid,128000);
+            if(sendtype==0) {
+               String html=get("https://y.music.163.com/m/song?id="+mid);
             String cover="https://p1.music.126.net/6y-UleORITEDbvrOLV0Q8A==/5639395138885805.jpg";
             int index1=html.indexOf("<meta property=\"og:image\" content=");
             if (index1!=-1) {
                 cover=html.substring(index1+"<meta property=\"og:image\" content=\"".length(),html.indexOf("\" />",index1))+"?param=114x114";
             }
-            String audio=GetNeteaseMusicSongUrl(mid,128000);
-            String songLyric=post("https://music.163.com/api/song/lyric?_nmclfl=1","","id="+mid+"&tv=-1&lv=-1&rv=-1&kv=-1");
-            JSONObject Lyric = new JSONObject(songLyric);
-            JSONObject lrc = Lyric.getJSONObject("lrc");
-            if(lrc.has("lyric")) {
-                String lyric = lrc.getString("lyric");
+                String songLyric=post("https://music.163.com/api/song/lyric?_nmclfl=1","","id="+mid+"&tv=-1&lv=-1&rv=-1&kv=-1");
+                JSONObject Lyric = new JSONObject(songLyric);
+                JSONObject lrc = Lyric.getJSONObject("lrc");
+                String lyric="";
+                if(lrc.has("lyric")) {
+                    lyric = lrc.getString("lyric");
+                }
                 sendMusic(qun,audio,singer,songname,cover,lyric);
             } else {
-                sendMusic(qun,audio,singer,songname,cover,"");
+                String Music=songname+" - "+singer+"\n"+fetchRedirectUrl(audio);
+                sendMsg(qun,Music);
             }
         } catch(e) {
             sendm(qun,"错误,请稍候再试");
@@ -485,7 +506,7 @@ public void 音乐(Object data) {
                 临时标志.数量=i+1;
             }
             地图.put(qun+wxid, 临时标志);
-            result2=result2+"\n请发送序号来进行点歌\n两分钟内有效";
+            result2=result2+"\n发送序号或链接进行点歌\n两分钟内有效";
             选择=5;
             sendm(qun,result2);
         } catch(e) {
@@ -493,7 +514,12 @@ public void 音乐(Object data) {
             return;
         }
     }
-    if(选择==3&&text.matches("^[1-9]\\d*$")) {
+    if(选择==3&&text.matches("^(链接|[1-9])\\d*$")) {
+        int sendtype=0;
+        if(text.startsWith("链接")) {
+            text=text.replace("链接","");
+            sendtype=1;
+        }
         if(地图==null||!地图.containsKey(qun+wxid)) {
             return;
         }
@@ -512,23 +538,28 @@ public void 音乐(Object data) {
         String name=取(qun,"歌曲",text);
         String quality=取(qun,"品质",text);
         String jsonData=KWGET("http://nmobi.kuwo.cn/mobi.s?f=web&source=kwplayerhd_ar_4.3.0.8_tianbao_T1A_qirui.apk&type=convert_url_with_sign&rid="+id+"&br="+quality);
-       //String jsonData=post("http://ghyinyue.com//core/Ajax.php","","id="+id+"&type=flac&p=kw&fun=getMusicDownloadUrl");
+        //String jsonData=post("http://ghyinyue.com//core/Ajax.php","","id="+id+"&type=flac&p=kw&fun=getMusicDownloadUrl");
         try {
             JSONObject jsonObject=new JSONObject(jsonData);
             if(jsonObject.get("code")==200) {
                 JSONObject data=jsonObject.getJSONObject("data");
-                String pic=get("http://artistpicserver.kuwo.cn/pic.web?type=rid_pic&pictype=url&size=500&rid="+id);
                 String url=data.getString("url");
-                String songLyric=pdget("https://bd-api.kuwo.cn/api/service/mv/lyric?musicId="+id+"&uid=-1&token=");
-                JSONObject Lyric = new JSONObject(songLyric);
-                JSONObject Lyric_data = Lyric.getJSONObject("data");
-                if(Lyric_data.has("content")) {
-                    String Lyric_data_content = Lyric_data.getString("content");
-                    Base64.Decoder decoder = Base64.getDecoder();
-                    byte[] decodedBytes = decoder.decode(Lyric_data_content);
-                    sendMusic(qun,url,author,name,pic,new String(decodedBytes));
+                if(sendtype==0) {
+                    String pic=get("http://artistpicserver.kuwo.cn/pic.web?type=rid_pic&pictype=url&size=500&rid="+id);
+                    String songLyric=pdget("https://bd-api.kuwo.cn/api/service/mv/lyric?musicId="+id+"&uid=-1&token=");
+                    JSONObject Lyric = new JSONObject(songLyric);
+                    JSONObject Lyric_data = Lyric.getJSONObject("data");
+                    String lyric="";
+                    if(Lyric_data.has("content")) {
+                        String Lyric_data_content = Lyric_data.getString("content");
+                        Base64.Decoder decoder = Base64.getDecoder();
+                        byte[] decodedBytes = decoder.decode(Lyric_data_content);
+                        lyric=new String(decodedBytes)+"";
+                    }
+                    sendMusic(qun,url,author,name,pic,lyric);
                 } else {
-                    sendMusic(qun,url,author,name,pic,"");
+                    String Music=name+" - "+author+"\n"+url;
+                    sendMsg(qun,Music);
                 }
             }
         } catch(e) {
@@ -576,7 +607,7 @@ public void 音乐(Object data) {
                 临时标志.数量=i+1;
             }
             地图.put(qun+wxid, 临时标志);
-            result2=result2+"\n请发送序号来进行点歌\n两分钟内有效";
+            result2=result2+"\n发送序号或链接进行点歌\n两分钟内有效";
             选择=3;
             sendm(qun,result2);
         } catch(e) {
@@ -584,7 +615,12 @@ public void 音乐(Object data) {
             return;
         }
     }
-    if(选择==8&&text.matches("^[1-9]\\d*$")) {
+    if(选择==8&&text.matches("^(链接|[1-9])\\d*$")) {
+        int sendtype=0;
+        if(text.startsWith("链接")) {
+            text=text.replace("链接","");
+            sendtype=1;
+        }
         if(地图==null||!地图.containsKey(qun+wxid)) {
             return;
         }
@@ -608,18 +644,23 @@ public void 音乐(Object data) {
             JSONObject jsonObject=new JSONObject(jsonData);
             if(jsonObject.get("code")==200) {
                 JSONObject data=jsonObject.getJSONObject("data");
-                String pic=get("http://artistpicserver.kuwo.cn/pic.web?type=rid_pic&pictype=url&size=500&rid="+id);
                 String url=data.getString("url");
-                String songLyric=pdget("https://bd-api.kuwo.cn/api/service/mv/lyric?musicId="+id+"&uid=-1&token=");
-                JSONObject Lyric = new JSONObject(songLyric);
-                JSONObject Lyric_data = Lyric.getJSONObject("data");
-                if(Lyric_data.has("content")) {
-                    String Lyric_data_content = Lyric_data.getString("content");
-                    Base64.Decoder decoder = Base64.getDecoder();
-                    byte[] decodedBytes = decoder.decode(Lyric_data_content);
-                    sendMusic(qun,url,author,name,pic,new String(decodedBytes));
+                if(sendtype==0) {
+                    String pic=get("http://artistpicserver.kuwo.cn/pic.web?type=rid_pic&pictype=url&size=500&rid="+id);
+                    String songLyric=pdget("https://bd-api.kuwo.cn/api/service/mv/lyric?musicId="+id+"&uid=-1&token=");
+                    JSONObject Lyric = new JSONObject(songLyric);
+                    JSONObject Lyric_data = Lyric.getJSONObject("data");
+                    String lyric="";
+                    if(Lyric_data.has("content")) {
+                        String Lyric_data_content = Lyric_data.getString("content");
+                        Base64.Decoder decoder = Base64.getDecoder();
+                        byte[] decodedBytes = decoder.decode(Lyric_data_content);
+                        lyric=new String(decodedBytes)+"";
+                    }
+                    sendMusic(qun,url,author,name,pic,lyric);
                 } else {
-                    sendMusic(qun,url,author,name,pic,"");
+                    String Music=name+" - "+author+"\n"+url;
+                    sendMsg(qun,Music);
                 }
             }
         } catch(e) {
@@ -645,7 +686,6 @@ public void 音乐(Object data) {
                 sendm(qun,"未搜到");
                 return;
             }
-
             for(int i = 0; i <resultList.length(); i++) {
                 JSONObject jsonObject = resultList.getJSONObject(i);
                 String artist = jsonObject.getString("artist").replace("&","/");
@@ -665,8 +705,6 @@ public void 音乐(Object data) {
                             break;
                         }
                     }
-
-
                 }
                 写(qun,"音乐",b,id);
                 写(qun,"歌手",b,artist);
@@ -674,7 +712,7 @@ public void 音乐(Object data) {
                 临时标志.数量=i+1;
             }
             地图.put(qun+wxid, 临时标志);
-            result2=result2+"\n请发送序号来进行点歌\n两分钟内有效";
+            result2=result2+"\n发送序号或链接进行点歌\n两分钟内有效";
             选择=8;
             sendm(qun,result2);
         } catch(e) {
@@ -752,7 +790,7 @@ public void 音乐(Object data) {
                 临时标志.数量=i+1;
             }
             地图.put(qun+wxid, 临时标志);
-            result2=result2+"\n请发送序号来进行点歌\n两分钟内有效";
+            result2=result2+"\n发送序号或链接进行点歌\n两分钟内有效";
             选择=6;
             sendm(qun,result2);
         } catch(e) {
@@ -829,7 +867,7 @@ public void 音乐(Object data) {
                 临时标志.数量=i+1;
             }
             地图.put(qun+wxid, 临时标志);
-            result2=result2+"\n请发送序号来进行点歌\n两分钟内有效";
+            result2=result2+"\n发送序号或链接进行点歌\n两分钟内有效";
             选择=7;
             sendm(qun,result2);
         } catch(e) {
@@ -888,7 +926,7 @@ public void 音乐(Object data) {
                     临时标志.数量=i+1;
                 }
                 地图.put(qun+wxid, 临时标志);
-                result2=result2+"\n请发送序号来进行点歌\n两分钟内有效";
+                result2=result2+"\n发送序号或链接进行点歌\n两分钟内有效";
                 选择=4;
             } else {
                 result2=jsonObject.getString("msg");
@@ -899,7 +937,12 @@ public void 音乐(Object data) {
             return;
         }
     }*/
-    if(选择==9&&text.matches("^[1-9]\\d*$")) {
+    if(选择==9&&text.matches("^(链接|[1-9])\\d*$")) {
+        int sendtype=0;
+        if(text.startsWith("链接")) {
+            text=text.replace("链接","");
+            sendtype=1;
+        }
         if(地图==null||!地图.containsKey(qun+wxid)) {
             return;
         }
@@ -916,19 +959,24 @@ public void 音乐(Object data) {
         String singer=取(qun,"歌手",text);
         String songname=取(qun,"歌曲",text);
         String cover=取(qun,"封面",text);
-        String lyric="";
         String jsonp=MGGET("https://m.music.migu.cn/migumusic/h5/play/auth/getSongPlayInfo?type=4&copyrightId="+mid);
-        String songLyric=MGGET("https://m.music.migu.cn/migumusic/h5/song/lyric?copyrightId="+mid);
         try {
             JSONObject jsonObject=new JSONObject(jsonp);
             JSONObject data=jsonObject.getJSONObject("data");
             String url=data.getString("playUrl");
-            JSONObject Lyric=new JSONObject(songLyric);
-            JSONObject data1=Lyric.getJSONObject("data");
-            if(data1.has("lyric")) {
-                lyric=data1.getString("lyric");
+            if(sendtype==0) {
+                String songLyric=MGGET("https://m.music.migu.cn/migumusic/h5/song/lyric?copyrightId="+mid);
+                JSONObject Lyric=new JSONObject(songLyric);
+                JSONObject data1=Lyric.getJSONObject("data");
+                String lyric="";
+                if(data1.has("lyric")) {
+                    lyric=data1.getString("lyric");
+                }
+                sendMusic(qun,"https:"+url,singer,songname,"https:"+cover,lyric);
+            } else {
+                String Music=songname+" - "+singer+"\n"+"https:"+url;
+                sendMsg(qun,Music);
             }
-            sendMusic(qun,"https:"+url,singer,songname,"https:"+cover,lyric);
         } catch(e) {
             sendm(qun,"错误,请稍候再试");
             return;
@@ -972,7 +1020,7 @@ public void 音乐(Object data) {
                 临时标志.数量=i+1;
             }
             地图.put(qun+wxid, 临时标志);
-            result2=result2+"\n请发送序号来进行点歌\n两分钟内有效";
+            result2=result2+"\n发送序号或链接进行点歌\n两分钟内有效";
             选择=9;
             sendm(qun,result2);
         } catch(e) {
@@ -981,7 +1029,12 @@ public void 音乐(Object data) {
         }
     }
 
-    if(选择==10&&text.matches("^[1-9]\\d*$")) {
+    if(选择==10&&text.matches("^(链接|[1-9])\\d*$")) {
+        int sendtype=0;
+        if(text.startsWith("链接")) {
+            text=text.replace("链接","");
+            sendtype=1;
+        }
         if(地图==null||!地图.containsKey(qun+wxid)) {
             return;
         }
@@ -997,10 +1050,15 @@ public void 音乐(Object data) {
         String url=取(qun,"音乐",text);
         String singer=取(qun,"歌手",text);
         String songname=取(qun,"歌曲",text);
-        String cover=取(qun,"封面",text);
-        if(cover.equals("")||cover.equals("null")) cover="https://ringimgbssdl.tx.kugou.com/uploadpic/softhead/100/20210124/20210124135824950079.jpg";
         try {
-            sendMusic(qun,url,singer,songname,cover,"");
+            if(sendtype==0) {
+                String cover=取(qun,"封面",text);
+                if(cover.equals("")||cover.equals("null")) cover="https://ringimgbssdl.tx.kugou.com/uploadpic/softhead/100/20210124/20210124135824950079.jpg";
+                sendMusic(qun,url,singer,songname,cover,"");
+            } else {
+                String Music=songname+" - "+singer+"\n"+url;
+                sendMsg(qun,Music);
+            }
         } catch(e) {
             sendm(qun,"错误,请稍候再试");
             return;
@@ -1045,7 +1103,7 @@ public void 音乐(Object data) {
                 临时标志.数量=i+1;
             }
             地图.put(qun+wxid, 临时标志);
-            result2=result2+"\n请发送序号来进行点歌\n两分钟内有效";
+            result2=result2+"\n发送序号或链接进行点歌\n两分钟内有效";
             选择=10;
             sendm(qun,result2);
         } catch(e) {
@@ -1053,7 +1111,12 @@ public void 音乐(Object data) {
             return;
         }
     }
-    if(选择==14&&text.matches("^[1-9]\\d*$")) {
+    if(选择==14&&text.matches("^(链接|[1-9])\\d*$")) {
+        int sendtype=0;
+        if(text.startsWith("链接")) {
+            text=text.replace("链接","");
+            sendtype=1;
+        }
         if(地图==null||!地图.containsKey(qun+wxid)) {
             return;
         }
@@ -1066,14 +1129,20 @@ public void 音乐(Object data) {
             选择=0;
             return;
         }
-        String url="https://music-api2.cenguigui.cn/?kg&id="+取(qun,"音乐",text)+"&type=song&format=mp3&level=lossless";
-        String lrc=get("http://m.kugou.com/app/i/krc.php?cmd=100&timelength=999999&hash="+取(qun,"音乐",text));
         String singer=取(qun,"歌手",text);
         String songname=取(qun,"歌曲",text);
         String cover=取(qun,"封面",text);
-        if(cover.equals("")||cover.equals("null")) cover="https://ringimgbssdl.tx.kugou.com/uploadpic/softhead/100/20210124/20210124135824950079.jpg";
+        String lyric=取(qun,"音乐",text);
+        String url="https://music-api2.cenguigui.cn/?kg&id="+取(qun,"音乐",text)+"&type=song&format=mp3&level=lossless";
         try {
-            sendMusic(qun,url,singer,songname,cover,lrc);
+            if(sendtype==0) {
+                 String lrc=get("http://m.kugou.com/app/i/krc.php?cmd=100&timelength=999999&hash="+lyric);
+                if(cover.equals("")||cover.equals("null")) cover="https://ringimgbssdl.tx.kugou.com/uploadpic/softhead/100/20210124/20210124135824950079.jpg";
+                sendMusic(qun,url,singer,songname,cover,lrc);
+            } else {
+                String Music=songname+" - "+singer+"\n"+fetchRedirectUrl(url);
+                sendMsg(qun,Music);
+            }
         } catch(e) {
             sendm(qun,"错误,请稍候再试");
             return;
@@ -1113,7 +1182,7 @@ public void 音乐(Object data) {
                 临时标志.数量=i+1;
             }
             地图.put(qun+wxid, 临时标志);
-            result2=result2+"\n请发送序号来进行点歌\n两分钟内有效";
+            result2=result2+"\n发送序号或链接进行点歌\n两分钟内有效";
             选择=14;
             sendm(qun,result2);
         } catch(e) {
@@ -1153,21 +1222,20 @@ public void 音乐(Object data) {
                     JSONObject json10=new JSONObject(file);
                     String media_mid=json10.get("media_mid");//专辑
                     try {
-                        String firstSip="https://music-api2.cenguigui.cn/?qq&id="+mid+"&type=song&format=mp3&level=jymaster";
+                        String firstSip="https://music-api2.cenguigui.cn/?qq&id="+mid+"&type=song&format=mp3&level=lossless";
                         String cover="http://y.gtimg.cn/music/photo_new/T002R500x500M000"+pmid+".jpg";
                         String songLyric=qqLyricget("https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg?format=json&nobase64=1&g_tk=5381&songmid="+mid);
                         JSONObject Lyric = new JSONObject(songLyric);
-                       if(Lyric.has("lyric")) {
-                           String json_lyric = Lyric.getString("lyric");
-                           sendMusic(qun,firstSip,firstSingerName,name,cover,json_lyric);
-                       } else {
-                           sendMusic(qun,firstSip,firstSingerName,name,cover,"");
-                       }
+                        String json_lyric="";
+                        if(Lyric.has("lyric")) {
+                            json_lyric=Lyric.getString("lyric");
+                        }
+                        sendMusic(qun,firstSip,firstSingerName,name,cover,json_lyric);
                     } catch(e) {
                         sendm(qun,"错误,请稍候再试");
                         return;
                     }
-               }
+                }
             }
         } catch(e) {
             sendm(qun,"错误,请稍候再试");

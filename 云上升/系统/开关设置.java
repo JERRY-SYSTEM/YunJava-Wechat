@@ -63,7 +63,7 @@ public static void 开关(Object data) {
         sendMsg(qun,"已关闭");
     }
     if(data.talkerType!=0) {
-        if(text.equals("开启整点报时")) {
+    if(text.equals("开启整点报时")) {
         if("1".equals(getString(qun,"整点报时",""))) {
             sendMsg(qun,"已经开了");
             return;
@@ -79,7 +79,7 @@ public static void 开关(Object data) {
         putString(qun, "整点报时", null);
         sendMsg(qun,"已关闭");
     }
-            if(text.equals("开启每日简报")) {
+    if(text.equals("开启每日简报")) {
         if("1".equals(getString(qun,"每日简报",""))) {
             sendMsg(qun,"已经开了");
             return;
@@ -93,6 +93,22 @@ public static void 开关(Object data) {
             return;
         }
         putString(qun, "每日简报", null);
+        sendMsg(qun,"已关闭");
+    }
+    if(text.equals("开启每日总结")) {
+        if("1".equals(getString(qun,"每日总结",""))) {
+            sendMsg(qun,"已经开了");
+            return;
+        }
+        putString(qun,"每日总结","1");
+        sendMsg(qun,"已开启");
+    }
+    if(text.equals("关闭每日总结")) {
+        if(!"1".equals(getString(qun,"每日总结",""))) {
+            sendMsg(qun,"还没开");
+            return;
+        }
+        putString(qun, "每日总结", null);
         sendMsg(qun,"已关闭");
     }
     }
@@ -405,6 +421,7 @@ public static void 开关(Object data) {
         putString(qun, "每日简报", "1");
         putString(qun, "娱乐系统", "1");
         putString(qun, "站长系统", "1");
+        putString(qun, "每日总结", "1");
         sendm(qun,"已开启全部功能");
     }
     if(text.equals("关闭全部功能")) {
@@ -425,6 +442,7 @@ public static void 开关(Object data) {
         putString(qun, "每日简报", null);
         putString(qun, "娱乐系统", null);
         putString(qun, "站长系统", null);
+        putString(qun, "每日总结", null);
         sendm(qun,"已关闭全部功能");
     }
 }
@@ -485,9 +503,9 @@ public static void sendm(String qun,String text) {
     }
 }
 
-public boolean[] boolArr=new boolean[18];
-public String[] kname=new String[] {"开关","菜单屏蔽","菜单限制","音乐系统","图片系统","搜索功能","娱乐系统","智能系统","视频系统","艾特回复","进群欢迎","自身撤回","词条系统","查询系统","解析系统","站长系统","整点报时","每日简报"};
-public String[] ww=new String[] {"开/关机","菜单屏蔽","菜单限制","音乐系统","图片系统","搜索功能","娱乐系统","智能系统","视频系统","艾特回复","进群欢迎","自身撤回","词条系统","查询系统","解析系统","站长系统","整点报时","每日简报"};
+public boolean[] boolArr=new boolean[19];
+public String[] kname=new String[] {"开关","菜单屏蔽","菜单限制","音乐系统","图片系统","搜索功能","娱乐系统","智能系统","视频系统","艾特回复","进群欢迎","自身撤回","词条系统","查询系统","解析系统","站长系统","整点报时","每日简报","每日总结"};
+public String[] ww=new String[] {"开/关机","菜单屏蔽","菜单限制","音乐系统","图片系统","搜索功能","娱乐系统","智能系统","视频系统","艾特回复","进群欢迎","自身撤回","词条系统","查询系统","解析系统","站长系统","整点报时","每日简报","每日总结"};
 
 public void 开关设置(String qun) {
     initActivity();
@@ -527,7 +545,6 @@ public void 开关设置(String qun) {
             });
             dialog.setNegativeButton(Html.fromHtml("<font color=\"#E3319D\">取消</font>"),new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
-//Toast("a");
                     dialog.dismiss();
                 }
             });

@@ -8,7 +8,7 @@ public class 整点报时 {
             Calendar calendar=Calendar.getInstance();
             LocalDateTime now=LocalDateTime.now();
             String Hour=""+calendar.get(Calendar.HOUR_OF_DAY);
-            if(!Hour.equals(取("签到","整点"))&&now.getHour()>=start&&now.getHour()<=end) {
+            if(!Hour.equals(取("执行","整点"))&&now.getHour()>=start&&now.getHour()<=end) {
                 String time=df.format(calendar.getTime());
                 String baoshi=get("https://xiaoapi.cn/API/zs_zdbs.php?h="+now.getHour());
                 String msg="";
@@ -24,7 +24,7 @@ public class 整点报时 {
                         sendMsg(qun,"整点报时\n"+msg+"\n"+time);
                     }
                 }
-                putString("签到","整点",Hour);
+                putString("执行","整点",Hour);
             }
         }
     },0,1,TimeUnit.SECONDS);
@@ -34,7 +34,7 @@ public void 报时(Object data) {
     String text=data.content;
     String qun=data.talker;
     String wxid=data.sendTalker;
-    if(text.equals("报时测试")) {
+    if(text.equals("测试报时")) {
         SimpleDateFormat df=new SimpleDateFormat("yyyy年MM月dd日HH:mm:ss");
         Calendar calendar=Calendar.getInstance();
         LocalDateTime now=LocalDateTime.now();

@@ -138,15 +138,15 @@ public void 查询(Object data) {
                     String u =f.substring(f.lastIndexOf("<meta name=\"description\" content=\"")+34,f.lastIndexOf("\"><meta name=\"keywords\""));
                     if(u.equals("百度百科是一部内容开放、自由的网络百科全书，旨在创造一个涵盖所有领域知识，服务所有互联网用户的中文知识性百科全书。在这里你可以参与词条编辑，分享贡献你的知识。")) {
                         try {
-                            String o =f.substring(f.lastIndexOf("                var sourceUrl = \"")+33,f.lastIndexOf("\";                var fromPage ="));
-                            sendm(qun,"请求限制,请完成验证:\n"+o);
+                            String o=f.substring(f.lastIndexOf("                var sourceUrl = \"")+33,f.lastIndexOf("\";                var fromPage ="));
+                            sendm(qun,"请求限制,请完成验证:\n"+o.replace("\"",""));
                             break;
                         } catch(e) {
                             sendm(qun,"抓取限制验证错误");
                             break;
                         }
                     }
-                    sendWeb(qun,"百度"+text,u+"",getAvatar(wxid),"https://baike.baidu.com/item/"+text);
+                    sendWeb(qun,text,u+"",getAvatar(wxid),"https://baike.baidu.com/item/"+text);
                     break;
                 } catch(e) {
                     sendm(qun,"没有找到");

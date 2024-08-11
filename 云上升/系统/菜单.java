@@ -2,7 +2,7 @@ public void 菜单(Object data) {
     String text=data.content;
     String qun=data.talker;
     String wxid=data.sendTalker;
-    File 代管=new File(JavaPath+"/数据/代管/"+qun+"/代管.txt");
+    File 代管=new File(JavaPath+"/数据/"+qun+"/代管.txt");
     if(!代管.getParentFile().exists()) {
         代管.getParentFile().mkdirs();
         if(!代管.exists()) {
@@ -14,12 +14,6 @@ public void 菜单(Object data) {
             开关(data);
             代管(data);
             //签到(data);
-            if("1".equals(getString(qun,"整点报时",""))) {
-                报时(data);
-            }
-            if("1".equals(getString(qun,"每日简报",""))) {
-                简报(data);
-            }
         }
         if("1".equals(getString(qun,"艾特回复",""))) {
             艾特(data);
@@ -29,6 +23,9 @@ public void 菜单(Object data) {
             菜单限制=mWxid;
         }
         if(wxid.equals(AuthorWxid)||菜单限制.equals(wxid)||简读用户(代管,wxid)) {
+            总结(data);
+            报时(data);
+            简报(data);
             if("1".equals(getString(qun,"智能系统",""))) {
                 智能(data);
             }
@@ -75,7 +72,8 @@ public void 菜单(Object data) {
                              +"╠发送模式╬词条系统╣\n"
                              +"╠每日简报╬查询系统╣\n"
                              +"╠整点报时╬站长系统╣\n"
-                             +"╚娱乐系统╩代管系统╝";
+                             +"╠娱乐系统╬代管系统╣\n"
+                             +"╚每日总结╩敬请期待╝";
                     sendm(qun,c);
                 }
                 if(text.equals("站长系统")) {
@@ -208,9 +206,23 @@ public void 菜单(Object data) {
                             每日简报="√";
                         }
                         String c="╔测试简报\n"
-                                 +"╠九点自动发送简报\n"
+                                 +"╠早上九点自动发送\n"
                                  +"╠目前只支持群使用\n"
                                  +"╚开启/关闭每日简报["+每日简报+"]";
+                        sendm(qun,c);
+                    }
+                    if(text.equals("每日总结")) {
+                        String 每日总结="×";
+                        if("1".equals(getString(qun,"每日总结",""))) {
+                            每日总结="√";
+                        }
+                        String c="╔一键总结\n"
+                                 +"╠追问+问题\n"
+                                 +"╠清空总结内容\n"
+                                 +"╠需要绑定智能系统\n"
+                                 +"╠晚上八点自动总结\n"
+                                 +"╠目前只支持群使用\n"
+                                 +"╚开启/关闭每日总结["+每日总结+"]";
                         sendm(qun,c);
                     }
                 if(text.equals("视频系统")) {
@@ -446,7 +458,7 @@ public void 菜单(Object data) {
                              +"发送[配置设置]绑定手机号\n"
                              +"╠手机状态:"+手机号码+"\n"
                              +"╠获取验证码\n"
-                             +"然后输入[验证码]即可绑定\n"
+                             +"然后发送[验证码]即可绑定\n"
                              +"╠清除绑定状态\n"
                              +"╠绑定状态:"+Token+"\n"
                              +"╚开启/关闭智能系统["+智能系统+"]";

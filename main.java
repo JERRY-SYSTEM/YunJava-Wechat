@@ -1,6 +1,6 @@
 String 脚本作者="云上升";//勿改
 String 脚本名称="YunJava";
-String 更新时间="24年8月3日";
+String 更新时间="24年8月10日";
 String 当前版本=PluginVersion;
 long 开始加载=System.currentTimeMillis();
 Thread 附属=new Thread(new Runnable() {//附属
@@ -15,6 +15,7 @@ Thread 附属=new Thread(new Runnable() {//附属
 Thread 系统=new Thread(new Runnable() {//系统
     public void run() {
         loadJava(JavaPath+"/云上升/系统/菜单.java");
+        loadJava(JavaPath+"/云上升/系统/每日总结.java");
         loadJava(JavaPath+"/云上升/系统/自动签到.java");
         loadJava(JavaPath+"/云上升/系统/私聊播报.java");
         loadJava(JavaPath+"/云上升/系统/代管系统.java");

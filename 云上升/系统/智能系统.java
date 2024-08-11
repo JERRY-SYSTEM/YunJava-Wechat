@@ -86,8 +86,7 @@ public void 回复(Object data) {
                     临时标志.时间=System.currentTimeMillis();
                     String GLMGET=GLMGET("https://chatglm.cn/chatglm/feed-api/assistant/search_list?page=1&pageSize=15&keyword="+text);
                     String message="";
-                    StringBuilder process=new StringBuilder();
-//判断
+                    StringBuilder process=new StringBuilder();//判断
                     String[] patterns= {"发生错误: (.*?)","<title>(.*?)</title>","\"msg\":\"(.*?)\"","\"message\":\"(.*?)\""};
                     for (String patternStr : patterns) {
                         Pattern pattern=Pattern.compile(patternStr);
@@ -274,8 +273,7 @@ public void 回复(Object data) {
                     String file_url = resultObject.getString("file_url");
                     sendReply(data.msgId,qun,"正在解读您的文件，请稍等...\n"+file_name+"-"+FileFormatConversion(fileSize)+"\n"+file_url);
                     text3="{\"type\": \"file\",\"file\": [{\"file_id\": \""+file_id+"\",\"file_url\": \""+file_url+"\",\"file_name\": \""+file_name+"\",\"file_size\": "+fileSize+"}]}";
-                    matcher = Pattern.compile("\\s目录#(.*?)\\.[^\\s]*").matcher(text);
-// 将匹配到的内容替换为空字符串
+                    matcher = Pattern.compile("\\s目录#(.*?)\\.[^\\s]*").matcher(text);// 将匹配到的内容替换为空字符串
                     text = matcher.replaceAll("");
                 }
             }
@@ -307,8 +305,7 @@ public void 回复(Object data) {
                 智能体=取(qun,"智能体");
             }
             String eventMessage=GLM("https://chatglm.cn/chatglm/backend-api/assistant/stream","{\"assistant_id\":\""+智能体+"\",\"conversation_id\":\""+记忆对话+"\",\"meta_data\":{\"is_test\":false,\"input_question_type\":\"xxxx\",\"channel\":\"\"},\"messages\":["+text1+"{\"role\":\"user\",\"content\":["+text2.replace("}{","},{")+"]}]}");
-            StringBuilder process=new StringBuilder();
-//判断
+            StringBuilder process=new StringBuilder();//判断
             String[] patterns= {"发生错误: (.*?)","<title>(.*?)</title>","\"msg\":\"(.*?)\"","\"message\":\"(.*?)\""};
             for(String patternStr:patterns) {
                 Pattern pattern=Pattern.compile(patternStr);
@@ -368,11 +365,9 @@ public void 回复(Object data) {
                     }
                 }
             }//回答内容
-            String[] lines=eventMessage.split("event:message\ndata:");
-//图片内容循环遍历每一行
+            String[] lines=eventMessage.split("event:message\ndata:");//图片内容循环遍历每一行
             for (int i = 0; i < lines.length; i += 2) {
                 String firstLine = lines[i]; // 获取当前行的数据
-//write(u解(lines[i]));
                 if(firstLine != null && firstLine.contains("image_urls")) { //是否包含image_urls
                     JSONObject json = new JSONObject(firstLine);
                     JSONArray json_parts = json.getJSONArray("parts");
@@ -409,8 +404,7 @@ public void 回复(Object data) {
             JSONObject partObject=partsArray.getJSONObject(0);
             JSONArray contentArray=partObject.getJSONArray("content");
             if(contentArray!=null&&contentArray.length()>0) {
-                JSONObject contentObject=contentArray.getJSONObject(0);
-//问答内容
+                JSONObject contentObject=contentArray.getJSONObject(0);//问答内容
                 if(contentObject.has("text")) {
                     process.append(contentObject.getString("text"));
                 }
@@ -557,8 +551,7 @@ public void 智能(Object data) {
             临时标志.时间=System.currentTimeMillis();
             String GLMGET=GLMGET("https://chatglm.cn/chatglm/feed-api/assistant/search_list?page=1&pageSize=15&keyword="+text);
             String message="";
-            StringBuilder process=new StringBuilder();
-//判断
+            StringBuilder process=new StringBuilder();//判断
             String[] patterns= {"发生错误: (.*?)","<title>(.*?)</title>","\"msg\":\"(.*?)\"","\"message\":\"(.*?)\""};
             for (String patternStr : patterns) {
                 Pattern pattern=Pattern.compile(patternStr);
@@ -617,8 +610,7 @@ public void 智能(Object data) {
             临时标志.时间=System.currentTimeMillis();
             String GLMGET=GLMGET("https://chatglm.cn/chatglm/feed-api/assistant/feed_list?page=1&page_size=40&tag=self");
             String message="";
-            StringBuilder process=new StringBuilder();
-//判断
+            StringBuilder process=new StringBuilder();//判断
             String[] patterns= {"发生错误: (.*?)","<title>(.*?)</title>","\"msg\":\"(.*?)\"","\"message\":\"(.*?)\""};
             for (String patternStr : patterns) {
                 Pattern pattern=Pattern.compile(patternStr);
@@ -750,8 +742,7 @@ public void 智能(Object data) {
                             String file_url = resultObject.getString("file_url");
                             sendReply(data.msgId,qun,"正在解读您的文件，请稍等...\n"+file_name+"-"+FileFormatConversion(fileSize)+"\n"+file_url);
                             text3="{\"type\": \"file\",\"file\": [{\"file_id\": \""+file_id+"\",\"file_url\": \""+file_url+"\",\"file_name\": \""+file_name+"\",\"file_size\": "+fileSize+"}]}";
-                            matcher = Pattern.compile("\\s目录#(.*?)\\.[^\\s]*").matcher(text);
-// 将匹配到的内容替换为空字符串
+                            matcher = Pattern.compile("\\s目录#(.*?)\\.[^\\s]*").matcher(text);// 将匹配到的内容替换为空字符串
                             text = matcher.replaceAll("");
                         }
                     }
@@ -844,11 +835,9 @@ public void 智能(Object data) {
                             }
                         }
                     }//回答内容
-                    String[] lines=eventMessage.split("event:message\ndata:");
-//图片内容循环遍历每一行
+                    String[] lines=eventMessage.split("event:message\ndata:");//图片内容循环遍历每一行
                     for (int i = 0; i < lines.length; i += 2) {
                         String firstLine = lines[i]; // 获取当前行的数据
-//write(u解(lines[i]));
                         if(firstLine != null && firstLine.contains("image_urls")) { //是否包含image_urls
                             JSONObject json = new JSONObject(firstLine);
                             JSONArray json_parts = json.getJSONArray("parts");

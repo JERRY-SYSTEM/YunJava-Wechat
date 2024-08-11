@@ -179,14 +179,13 @@ public static void getData(String qun,String text) {
     }
 }
 
+
 public static String fetchRedirectUrl(String url) {
     try {
-        URL imageUrl=new URL(url);
-        HttpURLConnection connection=(HttpURLConnection) imageUrl.openConnection();
-        connection.setRequestMethod("GET");
-        String redirectUrl=connection.getHeaderField("Location");
-        connection.disconnect();
-        return redirectUrl;
+        HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+        conn.setInstanceFollowRedirects(false);
+        conn.setConnectTimeout(5000);
+        return conn.getHeaderField("Location");
     } catch (Exception e) {
         e.printStackTrace();
         return "";
@@ -625,6 +624,7 @@ public void onMsg(Object data) {
         }
     }
     if("1".equals(getString(qun,"开关",""))) {
+        消息(data);
         进群(data);
         if("1".equals(getString(qun,"自身撤回",""))) {
             int 撤回时间 = 30;

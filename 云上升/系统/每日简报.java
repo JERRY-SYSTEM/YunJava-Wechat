@@ -8,7 +8,7 @@ public class 每日简报 {
             Calendar calendar=Calendar.getInstance();
             LocalDateTime now=LocalDateTime.now();
             String Day=calendar.get(Calendar.YEAR)+"-"+calendar.get(Calendar.DAY_OF_YEAR);
-            if(!Day.equals(取("签到","简报"))&&now.getHour()>=start&&now.getHour()<=end) {
+            if(!Day.equals(取("执行","简报"))&&now.getHour()>=start&&now.getHour()<=end) {
                 for (String qun:getGroups()) {
                     if("1".equals(getString(qun,"每日简报",""))&&"1".equals(getString(qun,"开关",""))) {
                         String time=df.format(calendar.getTime());
@@ -31,16 +31,16 @@ public class 每日简报 {
                         }
                     }
                 }
-                putString("签到","简报",Day);
+                putString("执行","简报",Day);
             }
         }
-    },0,5,TimeUnit.MINUTES);
+    },0,3,TimeUnit.MINUTES);
 } new 每日简报();
 public void 简报(Object data) {
     String text=data.content;
     String qun=data.talker;
     String wxid=data.sendTalker;
-    if(text.equals("简报测试")) {
+    if(text.equals("测试简报")) {
         SimpleDateFormat df=new SimpleDateFormat("yyyy年MM月dd日HH:mm:ss");
         Calendar calendar=Calendar.getInstance();
         LocalDateTime now=LocalDateTime.now();

@@ -31,11 +31,13 @@ public String read(String FilePath) {
 }
 
 
-
-
-
-
 public static void 简写(File ff, String a){
+if(!ff.getParentFile().exists()) {
+        ff.getParentFile().mkdirs();
+        if(!ff.exists()) {
+            ff.createNewFile();
+        }
+    }
 f=new FileWriter(ff,true);
 f1=new BufferedWriter(f);
 f1.append(a);
@@ -66,7 +68,7 @@ return u.replace(a,b);
 public static ArrayList 简取(File ff){
 if(!ff.exists()){
 ff.createNewFile();}
-fr  =  new  FileReader(ff);  
+fr=new FileReader(ff);
 f2=new BufferedReader(fr);
 String a;
 FileReader reader = new FileReader(ff);
@@ -85,11 +87,13 @@ return list1;
 
 
 public static void 全弃(File ff){
+if(ff.exists()) {
 f=new FileWriter(ff);
 f1=new BufferedWriter(f);
 f1.write("");
 f1.close();
 f.close();
+}
 }
 public boolean 模糊判断(String a,ArrayList l1){
 boolean x=false;
